@@ -3,8 +3,8 @@ package com.securefivewave.dtomapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
-import com.securefivewave.domain.User;
 import com.securefivewave.dto.UserDTO;
+import com.securefivewave.entity.User;
 
 @Component
 public class UserDTOMapper {

@@ -5,11 +5,11 @@ package com.securefivewave.service.implementation;
 
 import org.springframework.stereotype.Service;
 
-import com.securefivewave.domain.User;
 import com.securefivewave.dto.UserDTO;
 import com.securefivewave.dtomapper.UserDTOMapper;
-import com.securefivewave.repository.UserRepository;
-import com.securefivewave.service.UserService;
+import com.securefivewave.entity.User;
+import com.securefivewave.repository.IUserRepository;
+import com.securefivewave.service.IUserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,9 +19,9 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements IUserService{
 	
-	private final UserRepository<User> userRepository;
+	private final IUserRepository<User> userRepository;
 
 	@Override
 	public UserDTO createUser(User user) {

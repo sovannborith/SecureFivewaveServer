@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import com.securefivewave.domain.UserRole;
+import com.securefivewave.entity.UserRole;
 
 /**
  * @author User
