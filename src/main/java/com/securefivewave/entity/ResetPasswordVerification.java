@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ import lombok.experimental.SuperBuilder;
 @JsonInclude(value = Include.NON_DEFAULT)
 @Data
 @Entity
+@Table (name ="TBL_RESET_PASSWORD_VERIFICATION")
 public class ResetPasswordVerification {
 	@Id
     @Column(name = "id")

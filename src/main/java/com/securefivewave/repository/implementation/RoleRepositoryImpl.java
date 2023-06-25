@@ -2,6 +2,7 @@ package com.securefivewave.repository.implementation;
 import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.securefivewave.repository.IRoleRepository;
 import com.securefivewave.entity.Role;
+import com.securefivewave.query.RoleQuery;
 import com.securefivewave.query.UserRoleQuery;
 
 import lombok.RequiredArgsConstructor;
@@ -81,7 +83,19 @@ public class RoleRepositoryImpl implements IRoleRepository<Role>
 	}
 	@Override
 	public Role getRoleByRoleName(String roleName){
-		return null;
+		log.info("Fetching role by role name...");
+		// TODO Auto-generated method stub
+		try
+		{
+			KeyHolder holder = new GeneratedKeyHolder();
+			Role r = jdbc.query(RoleQuery.GET_ROLE_BY_ROLE_NAME_QUERY, ResultSetExtractor<Role> rs);
+		}
+		catch(EmptyResultDataAccessException exception) {
+			
+		}
+		catch(Exception exception) {
+			
+		}
 	}
 	private SqlParameterSource getSqlParameterSouce(Role role) {
 		// TODO Auto-generated method stub

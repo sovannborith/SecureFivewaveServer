@@ -28,8 +28,8 @@ import lombok.RequiredArgsConstructor;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
-public class UserResource {
+@RequestMapping("/api/v1/user")
+public class UserController {
 
 	private final IUserService userService;
 	

@@ -3,6 +3,7 @@ package com.securefivewave.repository.implementation;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -41,6 +42,7 @@ public class UserRepositoryImpl implements IUserRepository<User> {
 	@Override
 	public User create(User user) {
 		log.info("Adding new user...");		
+		log.info(RoleEnum.USER.toString());
 		if(getEmailCount(user.getEmail().trim().toLowerCase())>0) throw new ApiException("Email already in use. Please use a different email and try again.");
 		try
 		{
@@ -50,9 +52,9 @@ public class UserRepositoryImpl implements IUserRepository<User> {
 			user.setId(java.util.Objects.requireNonNull(holder.getKey().longValue()));
 			user.setIsEnable(false);
 			user.setIsLocked(false);
-			addUserRole(user.getId(),VerificationTypeEnum.ACCOUNT.getType());
-			String verificationUrl = getVerificationUrl(UUID.randomUUID().toString(),VerificationTypeEnum.ACCOUNT.getType());
-			jdbc.update(UserQuery.INSERT_ACCOUNT_VERIFICATION_QUERY, Map.of("userId", user.getId(),"url", verificationUrl));
+			addUserRole(user.getId(),RoleEnum.USER.toString());
+			//String verificationUrl = getVerificationUrl(UUID.randomUUID().toString(),VerificationTypeEnum.ACCOUNT.getType());
+			//jdbc.update(UserQuery.INSERT_ACCOUNT_VERIFICATION_QUERY, Map.of("userId", user.getId(),"url", verificationUrl));
 			//emailService.setVerificationUrl(user.getFirstName(),user.getEmail(),VerificationTypeEnum.ACCOUNT);
 			return user;
 		}
@@ -60,7 +62,7 @@ public class UserRepositoryImpl implements IUserRepository<User> {
 			throw new ApiException("No role " + RoleEnum.USER.toString() + " found");
 		}
 		catch(Exception exception) {
-			throw new ApiException("An error occurred. Please try again.");
+			throw exception;// ApiException("An error occurred. Please try again.");
 		}
 	}
 
@@ -88,8 +90,8 @@ public class UserRepositoryImpl implements IUserRepository<User> {
 		return null;
 	}
 	
-	public List<User> getUserByEmail(String email){
-		return null;//jdbc.query(UserQuery.GET_USER_BY_EMAIL_QUERY, Map.of("email_addr",email));
+	public Optional<User> getUserByEmail(String email){
+		return null;// jdbc.queryForList(UserQuery.GET_USER_BY_EMAIL_QUERY, Map.of("email_addr",email));
 	}
 	
 	private Integer getEmailCount(String email)
@@ -117,5 +119,11 @@ public class UserRepositoryImpl implements IUserRepository<User> {
 		ur.setRoleId(roleRepository.getRoleByRoleName(roleName).getId());
 		ur.setIsActive(true);
 		userRoleRepository.create(ur);
+	}
+
+	@Override
+	public Optional<User> getUserRoleByUserId(Long id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

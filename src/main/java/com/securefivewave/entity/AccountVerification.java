@@ -9,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,9 +24,11 @@ import lombok.experimental.SuperBuilder;
 @JsonInclude(value = Include.NON_DEFAULT)
 @Data
 @Entity
+@Table (name ="TBL_ACCOUNT_VERIFICATION")
 public class AccountVerification {
 	@Id
     @Column(name = "id")
+	@PrimaryKeyJoinColumn
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@NotEmpty(message = "User ID cannot be empty")
