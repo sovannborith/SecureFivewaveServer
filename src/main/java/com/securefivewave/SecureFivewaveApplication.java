@@ -15,7 +15,7 @@ public class SecureFivewaveApplication {
 		SpringApplication.run(SecureFivewaveApplication.class, args);
 	}
 	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
+	BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(STRENG);
 	}
 }

@@ -1,10 +1,8 @@
 package com.securefivewave.repository.implementation;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -20,7 +18,6 @@ import com.securefivewave.entity.Role;
 import com.securefivewave.entity.User;
 import com.securefivewave.entity.UserRole;
 import com.securefivewave.enumeration.RoleEnum;
-import com.securefivewave.enumeration.VerificationTypeEnum;
 import com.securefivewave.exception.ApiException;
 import com.securefivewave.query.UserQuery;
 import com.securefivewave.repository.IUserRoleRepository;
@@ -42,6 +39,7 @@ public class UserRepositoryImpl implements IUserRepository<User> {
 	@Override
 	public User create(User user) {
 		log.info("Adding new user...");		
+		
 		log.info(RoleEnum.USER.toString());
 		if(getEmailCount(user.getEmail().trim().toLowerCase())>0) throw new ApiException("Email already in use. Please use a different email and try again.");
 		try

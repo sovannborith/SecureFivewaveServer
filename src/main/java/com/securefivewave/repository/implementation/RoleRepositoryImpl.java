@@ -88,7 +88,8 @@ public class RoleRepositoryImpl implements IRoleRepository<Role>
 		try
 		{
 			KeyHolder holder = new GeneratedKeyHolder();
-			Role r = jdbc.query(RoleQuery.GET_ROLE_BY_ROLE_NAME_QUERY, ResultSetExtractor<Role> rs);
+			//Role r = jdbc.query(RoleQuery.GET_ROLE_BY_ROLE_NAME_QUERY, ResultSetExtractor<Role> rs);
+			
 		}
 		catch(EmptyResultDataAccessException exception) {
 			
@@ -96,6 +97,7 @@ public class RoleRepositoryImpl implements IRoleRepository<Role>
 		catch(Exception exception) {
 			
 		}
+		return new Role();
 	}
 	private SqlParameterSource getSqlParameterSouce(Role role) {
 		// TODO Auto-generated method stub
