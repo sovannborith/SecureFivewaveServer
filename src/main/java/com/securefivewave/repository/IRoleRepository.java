@@ -1,14 +1,12 @@
 package com.securefivewave.repository;
-import java.util.List;
+
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import com.securefivewave.entity.Role;
-public interface IRoleRepository<T extends Role> {
-	
-	/*Basic CRUD Operations */
-	T create(T data);
-	List<T> list(int page, int pageSize);
-	T get(Long id);
-	T update(T data);
-	Boolean delete(Long id);
-	T getRoleByRoleName(String roleName);
+public interface IRoleRepository extends ListCrudRepository<Role, Long> {
+		
+	@Query(value = "SELECT R.* FROM TBL_ROLE R WHERE LOWER(ROLE_NAME)=LOWER(:roleName)",nativeQuery=true)
+	Role getRoleByRoleName(@Param("roleName") String roleName);
 }

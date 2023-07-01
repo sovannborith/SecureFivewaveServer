@@ -4,7 +4,6 @@ package com.securefivewave.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@SuppressWarnings("serial")
 @ResponseStatus(
         value = HttpStatus.GATEWAY_TIMEOUT,
         reason = "Gateway Timeout calling service."

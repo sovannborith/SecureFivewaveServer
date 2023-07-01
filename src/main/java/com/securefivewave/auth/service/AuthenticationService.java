@@ -11,7 +11,7 @@ import com.securefivewave.auth.RegisterRequest;
 import com.securefivewave.auth.RegisterResponse;
 import com.securefivewave.entity.User;
 import com.securefivewave.jwt.JwtService;
-import com.securefivewave.repository.IUserRepository;
+import com.securefivewave.service.implementation.UserServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,31 +19,38 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthenticationService {
 	
-	private final IUserRepository<User> userRepository;
+	private final UserServiceImpl userServiceImpl;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
 	private final AuthenticationManager authManager;
 
 	public RegisterResponse register(RegisterRequest request) {
-		User user = User.builder()
-				.firstName(request.getFirstName())
-				.lastName(request.getLastName())
-				.email(request.getEmail())
-				.password(passwordEncoder.encode(request.getPassword()))				
-				.build();
-		userRepository.create(user);
-		var jwtToken = jwtService.generateToken(user);
-		return RegisterResponse.builder()
-				.token(jwtToken)
-				.build();
+		try
+		{
+			User user = User.builder()
+					.firstName(request.getFirstName())
+					.lastName(request.getLastName())
+					.email(request.getEmail())
+					.isEnable(false)
+					.isLocked(false)
+					.password(passwordEncoder.encode(request.getPassword()))				
+					.build();
+			userServiceImpl.createUser(user);
+			var jwtToken = jwtService.generateToken(request.getEmail());
+			return RegisterResponse.builder()
+					.token(jwtToken)
+					.build();
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
 	}
 	
 	public AuthenticationResponse authenticate(AuthenticationRequest request) {
 		authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 		try {
-			var user = userRepository.getUserByEmail(request.getEmail())
-					.orElseThrow();
-			var jwtToken = jwtService.generateToken(user);
+			var jwtToken = jwtService.generateToken(request.getEmail());
 			return AuthenticationResponse.builder()
 					.token(jwtToken)
 					.build();

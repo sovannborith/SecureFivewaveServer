@@ -1,6 +1,5 @@
 package com.securefivewave.exception;
 
-@SuppressWarnings("serial")
 public abstract class BusinessException extends RuntimeException {
     private Integer errorCode;
 

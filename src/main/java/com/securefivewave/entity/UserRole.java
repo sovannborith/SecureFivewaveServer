@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,10 +28,10 @@ public class UserRole {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@NotEmpty(message = "User ID cannot be empty")
+	@NotNull(message = "User ID cannot be empty")
 	@Column(name = "user_id")
 	private Long userId;
-	@NotEmpty(message = "Role ID cannot be empty")
+	@NotNull(message = "Role ID cannot be empty")
 	@Column(name = "role_id")
 	private Long roleId;
 	@Column(name = "is_active")

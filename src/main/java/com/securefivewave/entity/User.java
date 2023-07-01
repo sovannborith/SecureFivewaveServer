@@ -1,17 +1,8 @@
 package com.securefivewave.entity;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.securefivewave.enumeration.RoleEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 
-@SuppressWarnings("serial")
+
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,7 +26,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @Entity
 @Table (name ="TBL_USER")
-public class User implements Serializable, UserDetails  {
+public class User  {
 		
 	@Id
     @Column(name = "id")
@@ -66,32 +57,6 @@ public class User implements Serializable, UserDetails  {
 	private Boolean isLocked;
 	@Column(name = "is_mfa")
 	private Boolean isMfa;
-	@Column(name = "create_at")
+	@Column(name = "created_at")
 	private LocalDateTime createdAt;
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of(new SimpleGrantedAuthority(RoleEnum.USER.toString()));
-	}
-	@Override
-	public String getUsername() {
-		return email;
-	}
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
-	@Override
-	public boolean isAccountNonLocked() {
-		return !isLocked;
-	}
-	@Override
-	public boolean isCredentialsNonExpired() {
-		
-		return true;
-	}
-	@Override
-	public boolean isEnabled() {
-		// TODO Auto-generated method stub
-		return isEnable;
-	}
 }

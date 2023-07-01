@@ -9,20 +9,23 @@ import org.springframework.web.bind.annotation.RestController;
 import com.securefivewave.auth.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationController {
 private final AuthenticationService authService;
 	
 	@PostMapping("/register")
 	public ResponseEntity<RegisterResponse> register (@RequestBody @Valid RegisterRequest request){
+		log.info("Registering the new user");
 		return ResponseEntity.ok(authService.register(request));
 	}
 	
-	@PostMapping("/authenticate")
-	public ResponseEntity<AuthenticationResponse> register (@RequestBody @Valid AuthenticationRequest request){
+	@PostMapping("/login")
+	public ResponseEntity<AuthenticationResponse> login (@RequestBody @Valid AuthenticationRequest request){
 		try {
 			return ResponseEntity.ok(authService.authenticate(request));
 		}

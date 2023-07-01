@@ -24,23 +24,22 @@ public class JwtService {
 	private long jwtExpiration;
 	@Value("${application.security.jwt.refresh-token.expiration}")
 	private long refreshExpiration;
-	  
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
 	}
 	
 	
-	public String generateToken( UserDetails userDetails) {
-		return generateToken(new HashMap<>(), userDetails);
+	public String generateToken( String userName) {
+		return generateToken(new HashMap<>(), userName);
 	}
-	public String generateToken(Map<String,Object> extraClaim, UserDetails userDetails) {
-		return generateToken(new HashMap<>(), userDetails, jwtExpiration);
+	public String generateToken(Map<String,Object> extraClaim, String userName) {
+		return generateToken(new HashMap<>(), userName, jwtExpiration);
 	}
-	public String generateToken(Map<String,Object> extraClaim, UserDetails userDetails,long expiration) {
+	public String generateToken(Map<String,Object> extraClaim, String userName,long expiration) {
 		return Jwts
-				.builder()
+				.builder() 
 				.setClaims(extraClaim)
-				.setSubject(userDetails.getUsername())
+				.setSubject(userName)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis()+ expiration))
 				.signWith(getSignInKey(),SignatureAlgorithm.HS256)

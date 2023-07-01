@@ -7,11 +7,14 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.securefivewave.entity.User;
-import com.securefivewave.repository.IUserRepository;
+import com.securefivewave.auth.service.SecureFivewaveUserDetail;
+import com.securefivewave.constaint.GlobalConstaint;
+import com.securefivewave.dto.dtomapper.UserDTOMapper;
+import com.securefivewave.service.implementation.UserServiceImpl;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,20 +22,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 	
-	private final IUserRepository<User> userRepository;
-	private final PasswordEncoder passwordEncoder;
+	private final UserServiceImpl userServiceImpl;
+	
+	@Bean
+	BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(GlobalConstaint.PASSWORD_STRENGTH);
+	}
 	@Bean
 	UserDetailsService userDetailsService() {
-		return userName -> userRepository.getUserByEmail(userName)
-				.orElseThrow(()-> new UsernameNotFoundException("User not found!"));
+		return userName -> new SecureFivewaveUserDetail(UserDTOMapper.toUser(userServiceImpl.getUserByEmail(userName)));
 	}
 	@Bean
 	AuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 		authProvider.setUserDetailsService(userDetailsService());
-		authProvider.setPasswordEncoder(passwordEncoder);
-		
-		
+		authProvider.setPasswordEncoder(passwordEncoder());
 		return authProvider;
 	}
 	
@@ -40,5 +44,5 @@ public class ApplicationConfig {
 	AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();
 	}
-	
+		
 }
