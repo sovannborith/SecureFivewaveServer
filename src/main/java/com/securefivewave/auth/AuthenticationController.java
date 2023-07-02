@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.securefivewave.auth.service.AuthenticationService;
+import com.securefivewave.service.implementation.UserTokenServiceImpl;
 import com.securefivewave.token.TokenService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthenticationController {
 
 	private final AuthenticationService authService;
-	private final TokenService tokenService;
+	private final UserTokenServiceImpl tokenServiceImpl;
 	
 	@PostMapping("/register")
 	public ResponseEntity<RegisterResponse> register (@RequestBody @Valid RegisterRequest request){
@@ -44,7 +45,7 @@ public class AuthenticationController {
 	@PostMapping("/refresh_token")
 	public void refreshToken (HttpServletRequest request, HttpServletResponse response) throws Exception{
 		try {
-			tokenService.refreshToken(request,response);
+			tokenServiceImpl.refreshToken(request,response);
 		}
 		catch(Exception e)
 		{

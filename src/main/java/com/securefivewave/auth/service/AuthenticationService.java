@@ -10,8 +10,6 @@ import com.securefivewave.auth.AuthenticationResponse;
 import com.securefivewave.auth.RegisterRequest;
 import com.securefivewave.auth.RegisterResponse;
 import com.securefivewave.entity.User;
-import com.securefivewave.entity.UserToken;
-import com.securefivewave.enumeration.TokenTypeEnum;
 import com.securefivewave.jwt.JwtService;
 import com.securefivewave.repository.IUserRepository;
 import com.securefivewave.service.implementation.RoleServiceImpl;
@@ -70,6 +68,11 @@ public class AuthenticationService {
 			SecureFivewaveUserDetail userDetails = new SecureFivewaveUserDetail(user, userRoleServiceImpl, roleServiceImpl);
 			String jwtToken = jwtService.generateToken(userDetails);
 			String refreshToken = jwtService.generateRefreshToken(userDetails);
+
+			revokedAllValidUserTokenByUserId(user.getId());// Revoked all valid tokens
+			saveUserToken(user, jwtToken); // Save new created token
+
+
 			return AuthenticationResponse.builder()
 					.accessToken(jwtToken)
 					.refreschToken(refreshToken)
@@ -82,16 +85,11 @@ public class AuthenticationService {
 	}
 
 	private void saveUserToken(User user, String jwtToken)
-	{
-		UserToken userToken = UserToken.builder()
-								.userId(user.getId())
-								.accessToken(jwtToken)
-								.tokenType(TokenTypeEnum.BEARER.toString())
-								.isExpired(false)
-								.isRevoked(false)
-								.build();
-								
-		userTokenServiceImpl.createUserToken(userToken);						
+	{						
+		userTokenServiceImpl.saveUserToken(user,jwtToken);						
 	}
-
+	private void revokedAllValidUserTokenByUserId(Long Id)
+	{						
+		userTokenServiceImpl.revokedAllValidUserTokenByUserId(Id);				
+	}
 }
