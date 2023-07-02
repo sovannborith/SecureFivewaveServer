@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.securefivewave.auth.service.SecureFivewaveUserDetail;
+
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +25,8 @@ public class JwtController {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
         if (authentication.isAuthenticated()){
-            return jwtService.generateToken(authRequest.getUserName());
+            SecureFivewaveUserDetail userDetails = new SecureFivewaveUserDetail();
+            return jwtService.generateToken(userDetails);
         }
         else {
             throw new UsernameNotFoundException("Invalid user credentials");

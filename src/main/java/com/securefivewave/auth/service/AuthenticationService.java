@@ -10,8 +10,14 @@ import com.securefivewave.auth.AuthenticationResponse;
 import com.securefivewave.auth.RegisterRequest;
 import com.securefivewave.auth.RegisterResponse;
 import com.securefivewave.entity.User;
+import com.securefivewave.entity.UserToken;
+import com.securefivewave.enumeration.TokenTypeEnum;
 import com.securefivewave.jwt.JwtService;
+import com.securefivewave.repository.IUserRepository;
+import com.securefivewave.service.implementation.RoleServiceImpl;
+import com.securefivewave.service.implementation.UserRoleServiceImpl;
 import com.securefivewave.service.implementation.UserServiceImpl;
+import com.securefivewave.service.implementation.UserTokenServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +29,10 @@ public class AuthenticationService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
 	private final AuthenticationManager authManager;
+	private final UserTokenServiceImpl userTokenServiceImpl;
+	private final UserRoleServiceImpl userRoleServiceImpl;
+	private final RoleServiceImpl roleServiceImpl;
+	private final IUserRepository userRepository;
 
 	public RegisterResponse register(RegisterRequest request) {
 		try
@@ -35,10 +45,15 @@ public class AuthenticationService {
 					.isLocked(false)
 					.password(passwordEncoder.encode(request.getPassword()))				
 					.build();
-			userServiceImpl.createUser(user);
-			var jwtToken = jwtService.generateToken(request.getEmail());
+			userServiceImpl.createUser(user);// Save registered user
+			SecureFivewaveUserDetail userDetails = new SecureFivewaveUserDetail(user, userRoleServiceImpl, roleServiceImpl);
+			String jwtToken = jwtService.generateToken(userDetails);
+			String refreshToken = jwtService.generateRefreshToken(userDetails);
+			saveUserToken(user,jwtToken); // Save user token
+
 			return RegisterResponse.builder()
-					.token(jwtToken)
+					.accessToken(jwtToken)
+					.refreschToken(refreshToken)
 					.build();
 		}
 		catch(Exception e)
@@ -51,10 +66,13 @@ public class AuthenticationService {
 		try 
 		{
 			authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-		
-			var jwtToken = jwtService.generateToken(request.getEmail());
+			User user = userRepository.getUserByEmail(request.getEmail());
+			SecureFivewaveUserDetail userDetails = new SecureFivewaveUserDetail(user, userRoleServiceImpl, roleServiceImpl);
+			String jwtToken = jwtService.generateToken(userDetails);
+			String refreshToken = jwtService.generateRefreshToken(userDetails);
 			return AuthenticationResponse.builder()
-					.token(jwtToken)
+					.accessToken(jwtToken)
+					.refreschToken(refreshToken)
 					.build();
 		}
 		catch(Exception e)
@@ -62,4 +80,18 @@ public class AuthenticationService {
 			throw(e);
 		}
 	}
+
+	private void saveUserToken(User user, String jwtToken)
+	{
+		UserToken userToken = UserToken.builder()
+								.userId(user.getId())
+								.accessToken(jwtToken)
+								.tokenType(TokenTypeEnum.BEARER.toString())
+								.isExpired(false)
+								.isRevoked(false)
+								.build();
+								
+		userTokenServiceImpl.createUserToken(userToken);						
+	}
+
 }

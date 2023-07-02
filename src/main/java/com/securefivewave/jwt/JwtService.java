@@ -9,6 +9,9 @@ import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import com.securefivewave.auth.service.SecureFivewaveUserDetail;
+
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.Claims;
@@ -29,17 +32,25 @@ public class JwtService {
 	}
 	
 	
-	public String generateToken( String userName) {
-		return generateToken(new HashMap<>(), userName);
+	public String generateToken( SecureFivewaveUserDetail userDetails) {
+		return generateToken(new HashMap<>(), userDetails);
 	}
-	public String generateToken(Map<String,Object> extraClaim, String userName) {
-		return generateToken(new HashMap<>(), userName, jwtExpiration);
+	public String generateToken(Map<String,Object> extraClaim, SecureFivewaveUserDetail userDetails) {
+		return generateToken(new HashMap<>(), userDetails, jwtExpiration);
 	}
-	public String generateToken(Map<String,Object> extraClaim, String userName,long expiration) {
+	public String generateToken(Map<String,Object> extraClaim, SecureFivewaveUserDetail userDetails,long expiration) {
+		return buildToken(extraClaim, userDetails,expiration);
+	}
+
+	public String generateRefreshToken(SecureFivewaveUserDetail userDetails) {
+		return buildToken(new HashMap<>(), userDetails,refreshExpiration);
+	}
+
+	private String buildToken(Map<String,Object> extraClaim, SecureFivewaveUserDetail userDetails,long expiration){
 		return Jwts
 				.builder() 
 				.setClaims(extraClaim)
-				.setSubject(userName)
+				.setSubject(userDetails.getUsername())
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis()+ expiration))
 				.signWith(getSignInKey(),SignatureAlgorithm.HS256)

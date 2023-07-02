@@ -27,7 +27,7 @@ public class SecurityConfiguration {
 		return http
 				.authorizeHttpRequests( auth -> {
                     auth.requestMatchers("/api/v1/auth/**").permitAll();
-                    auth.requestMatchers("/api/v1/admin/**").hasRole("USER");
+                    auth.requestMatchers("/api/v1/admin/**").authenticated();
                     auth.anyRequest().authenticated();
                 })
                 .csrf(csrf -> csrf.disable())                
