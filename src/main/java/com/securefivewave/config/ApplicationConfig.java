@@ -8,12 +8,12 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.securefivewave.auth.service.SecureFivewaveUserDetail;
 import com.securefivewave.constaint.GlobalConstaint;
-import com.securefivewave.dto.dtomapper.UserDTOMapper;
-import com.securefivewave.service.implementation.UserServiceImpl;
+import com.securefivewave.repository.IUserRepository;
+import com.securefivewave.service.implementation.RoleServiceImpl;
+import com.securefivewave.service.implementation.UserRoleServiceImpl;
 
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 	
-	private final UserServiceImpl userServiceImpl;
+	private final IUserRepository userRepository;
+	private final UserRoleServiceImpl userRoleServiceImpl;
+	private final RoleServiceImpl roleServiceImpl;
 	
 	@Bean
 	BCryptPasswordEncoder passwordEncoder() {
@@ -30,7 +32,7 @@ public class ApplicationConfig {
 	}
 	@Bean
 	UserDetailsService userDetailsService() {
-		return userName -> new SecureFivewaveUserDetail(UserDTOMapper.toUser(userServiceImpl.getUserByEmail(userName)));
+		return userName -> new SecureFivewaveUserDetail(userRepository.getUserByEmail(userName),userRoleServiceImpl,roleServiceImpl);
 	}
 	@Bean
 	AuthenticationProvider authenticationProvider() {

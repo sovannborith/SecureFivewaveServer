@@ -10,34 +10,34 @@ import com.securefivewave.dto.UserRoleDTO;
 import com.securefivewave.entity.User;
 import com.securefivewave.service.implementation.RoleServiceImpl;
 import com.securefivewave.service.implementation.UserRoleServiceImpl;
-import com.securefivewave.service.implementation.UserServiceImpl;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Data
+@RequiredArgsConstructor
 public class SecureFivewaveUserDetail implements UserDetails {
-
-    private final UserRoleServiceImpl userRoleServiceImpl;
-    private final UserServiceImpl userServiceImpl;
-    private final RoleServiceImpl roleServiceImpl;
+    
+    private UserRoleServiceImpl userRoleServiceImpl;
+    private RoleServiceImpl roleServiceImpl;
 
     private String userName;
     private String password;
     private boolean isEnabled;
     private List<GrantedAuthority> authorities;
 
-    public SecureFivewaveUserDetail(User user) {
-        userRoleServiceImpl =new UserRoleServiceImpl(null);
-        userServiceImpl = new UserServiceImpl(null, null, null);
-        roleServiceImpl = new RoleServiceImpl(null);
+    public SecureFivewaveUserDetail(User user, UserRoleServiceImpl userRoleService,  RoleServiceImpl roleService ) {
+        
+        this.userRoleServiceImpl = userRoleService;
+        this.roleServiceImpl = roleService;
         this.userName = user.getEmail();
         this.password = user.getPassword();
         this.isEnabled = user.getIsEnable();        
-        this.authorities = userAuthority(user.getId());
+        this.authorities = getUserAuthority(user.getId());
         
     }
     
-    private List<GrantedAuthority> userAuthority(Long userId){
+    private List<GrantedAuthority> getUserAuthority(Long userId){
 
         List<UserRoleDTO> userRoles = userRoleServiceImpl.getUserRoleByUserId(userId);
         List<GrantedAuthority> authority =new ArrayList<>();

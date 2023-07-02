@@ -15,7 +15,6 @@ import com.securefivewave.enumeration.RoleEnum;
 import com.securefivewave.exception.ApiException;
 import com.securefivewave.repository.IRoleRepository;
 import com.securefivewave.repository.IUserRepository;
-import com.securefivewave.repository.IUserRoleRepository;
 import com.securefivewave.service.IUserService;
 
 import lombok.RequiredArgsConstructor;

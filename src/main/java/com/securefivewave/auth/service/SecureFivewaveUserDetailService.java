@@ -4,10 +4,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-
-import com.securefivewave.dto.dtomapper.UserDTOMapper;
 import com.securefivewave.entity.User;
-import com.securefivewave.service.implementation.UserServiceImpl;
+import com.securefivewave.repository.IUserRepository;
+import com.securefivewave.service.implementation.RoleServiceImpl;
+import com.securefivewave.service.implementation.UserRoleServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,13 +15,15 @@ import lombok.RequiredArgsConstructor;
 @Component
 public class SecureFivewaveUserDetailService implements UserDetailsService {
 
-    private final UserServiceImpl userServiceImpl;
+    private final IUserRepository userRepository;
+    private final UserRoleServiceImpl userRoleServiceImpl;
+    private final RoleServiceImpl roleServiceImpl;
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 
-        User user = UserDTOMapper.toUser(userServiceImpl.getUserByEmail(userName));
-        SecureFivewaveUserDetail userDetails = new SecureFivewaveUserDetail(user);
+        User user =  userRepository.getUserByEmail(userName);//UserDTOMapper.toUser(userServiceImpl.getUserByEmail(userName));
+        SecureFivewaveUserDetail userDetails = new SecureFivewaveUserDetail(user,userRoleServiceImpl,roleServiceImpl);
 
         return userDetails;
     }

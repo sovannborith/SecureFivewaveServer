@@ -16,7 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthenticationController {
-private final AuthenticationService authService;
+
+	private final AuthenticationService authService;
 	
 	@PostMapping("/register")
 	public ResponseEntity<RegisterResponse> register (@RequestBody @Valid RegisterRequest request){
