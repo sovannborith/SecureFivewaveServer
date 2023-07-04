@@ -27,15 +27,15 @@ public class SecurityConfiguration {
 		return http
 				.authorizeHttpRequests( auth -> {
                     auth.requestMatchers("/api/v1/auth/**").permitAll();
-                    auth.requestMatchers("/api/v1/admin/**").authenticated();
+                    auth.requestMatchers("/api/v1/admin/**","/api/v1/user/**").hasAuthority("ADMIN");
                     auth.anyRequest().authenticated();
                 })
                 .csrf(csrf -> csrf.disable())                
                 .sessionManagement(session -> session.sessionCreationPolicy( SessionCreationPolicy.STATELESS)
-                )
-                
+                )                
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                
                 .build();
 		
 	}

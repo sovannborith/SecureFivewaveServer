@@ -9,7 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -25,19 +24,21 @@ import lombok.experimental.SuperBuilder;
 @JsonInclude(value = Include.NON_DEFAULT)
 @Data
 @Entity
-@Table (name ="TBL_ACCOUNT_VERIFICATION")
-public class AccountVerification {
+@Table (name ="TBL_USER_OTP")
+public class UserOtp {
 	@Id
     @Column(name = "id")
-	@PrimaryKeyJoinColumn
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@NotNull(message = "User ID cannot be empty")
 	@Column(name = "user_id")
 	private Long userId;
-	@NotEmpty
-	@Column(name = "url")
-	private String url;
+	@NotEmpty(message = "User Otp cannot be empty")
+	@Column(name = "user_otp")
+	private String userOtp;
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
+	
+	@Column(name = "otp_expired_at")
+	private LocalDateTime otpExpiredAt;
 }

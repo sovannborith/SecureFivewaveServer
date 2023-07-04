@@ -98,6 +98,8 @@ public class UserTokenServiceImpl implements IUserTokenService{
             
 			if(jwtService.isTokenValid(refreshToken, userDetails)) {
 				String accessToken = jwtService.generateToken(userDetails);
+				revokedAllValidUserTokenByUserId(user.getId());
+				saveUserToken(user, refreshToken);
                 var authResponse = AuthenticationResponse.builder()
                     .accessToken(accessToken)
                     .refreschToken(refreshToken)

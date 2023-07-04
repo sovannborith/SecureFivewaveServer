@@ -1,5 +1,6 @@
 package com.securefivewave.auth.service;
 
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +33,7 @@ public class AuthenticationService {
 	private final RoleServiceImpl roleServiceImpl;
 	private final IUserRepository userRepository;
 
-	public RegisterResponse register(RegisterRequest request) {
+	public RegisterResponse register(RegisterRequest request) throws Exception {
 		try
 		{
 			User user = User.builder()
@@ -48,7 +49,6 @@ public class AuthenticationService {
 			String jwtToken = jwtService.generateToken(userDetails);
 			String refreshToken = jwtService.generateRefreshToken(userDetails);
 			saveUserToken(user,jwtToken); // Save user token
-
 			return RegisterResponse.builder()
 					.accessToken(jwtToken)
 					.refreschToken(refreshToken)
@@ -69,8 +69,7 @@ public class AuthenticationService {
 			String jwtToken = jwtService.generateToken(userDetails);
 			String refreshToken = jwtService.generateRefreshToken(userDetails);
 
-			revokedAllValidUserTokenByUserId(user.getId());// Revoked all valid tokens
-			saveUserToken(user, jwtToken); // Save new created token
+			
 
 
 			return AuthenticationResponse.builder()
@@ -92,4 +91,6 @@ public class AuthenticationService {
 	{						
 		userTokenServiceImpl.revokedAllValidUserTokenByUserId(Id);				
 	}
+
+	
 }

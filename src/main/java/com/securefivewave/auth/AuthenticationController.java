@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.securefivewave.auth.service.AuthenticationService;
 import com.securefivewave.service.implementation.UserTokenServiceImpl;
-import com.securefivewave.token.TokenService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,7 +25,7 @@ public class AuthenticationController {
 	private final UserTokenServiceImpl tokenServiceImpl;
 	
 	@PostMapping("/register")
-	public ResponseEntity<RegisterResponse> register (@RequestBody @Valid RegisterRequest request){
+	public ResponseEntity<RegisterResponse> register (@RequestBody @Valid RegisterRequest request) throws Exception{
 		log.info("Registering the new user");
 		return ResponseEntity.ok(authService.register(request));
 	}

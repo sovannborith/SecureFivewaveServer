@@ -1,14 +1,19 @@
 package com.securefivewave.repository;
+
 import java.util.List;
 
-import com.securefivewave.entity.AccountVerification;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.query.Param;
 
-public interface IAccountVerficationRepository<T extends AccountVerification> {
+import com.securefivewave.entity.AccountVerification;
+public interface IAccountVerficationRepository extends ListCrudRepository<AccountVerification, Long> {
 	
-	/*Basic CRUD Operations */
-	T create(T data);
-	List<T> list(int page, int pageSize);
-	T get(Long id);
-	T update(T data);
-	Boolean delete(Long id);
+
+	@Query(value = "SELECT U.* from TBL_ACCOUNT_VERFICATION U WHERE USER_ID=:userId", nativeQuery = true)
+	List<AccountVerification> getAccountVerficationByUserId(@Param("userId") Long userId);
+	
+	@Query(value = "SELECT U.* from TBL_ACCOUNT_VERFICATION U WHERE U.URL=:url", nativeQuery=true)
+	AccountVerification getAccountVerificationByUrl(@Param("url") String url);
+
 }
