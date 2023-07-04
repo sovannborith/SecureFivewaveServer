@@ -114,6 +114,7 @@ public class UserTokenServiceImpl implements IUserTokenService{
 		UserToken userToken = UserToken.builder()
 								.userId(user.getId())
 								.accessToken(jwtToken)
+								.refreshToken(jwtToken)
 								.tokenType(TokenTypeEnum.BEARER.toString())
 								.isExpired(false)
 								.isRevoked(false)

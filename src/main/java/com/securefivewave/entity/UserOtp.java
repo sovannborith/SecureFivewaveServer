@@ -37,8 +37,7 @@ public class UserOtp {
 	@Column(name = "user_otp")
 	private String userOtp;
 	@Column(name = "created_at")
-	private LocalDateTime createdAt;
-	
+	private LocalDateTime createdAt;	
 	@Column(name = "otp_expired_at")
 	private LocalDateTime otpExpiredAt;
 }

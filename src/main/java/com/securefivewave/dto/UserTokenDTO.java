@@ -13,6 +13,7 @@ public class UserTokenDTO {
 	private Long id;
 	private Long userId;
 	private String accessToken;
+	private String refreshToken;
 	private String tokenType;
 	private Boolean isRevoked;
 	private Boolean isExpired;

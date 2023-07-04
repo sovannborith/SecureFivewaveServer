@@ -56,7 +56,7 @@ public class UserServiceImpl implements IUserService{
 		if(getUserByEmail(user.getEmail().trim().toLowerCase())!=null) throw new ApiException("Email already in use. Please use a different email and try again.");
 		try
 		{
-			user.setIsEnable(true);
+			//user.setIsEnable(true);
 			user.setIsLocked(false);
 			userRepository.save(user);
 			
@@ -92,7 +92,7 @@ public class UserServiceImpl implements IUserService{
 			userOtpServiceImpl.createUserToken(userOtp);
 			// Save Account verification
 			UUID uuid = UUID.randomUUID();
-			String url = GlobalConstaint.BASED_URL + "/auth/verifyOtp?userId=" + user.getId().toString() + "&otp=" + userOtp.getUserOtp() + "&uid=" + uuid.toString();
+			String url = GlobalConstaint.BASED_URL + "/auth/verify-otp?email=" + user.getEmail() + "&otp=" + userOtp.getUserOtp() + "&uid=" + uuid.toString();
 			AccountVerification av =AccountVerification.builder()
 							.userId(user.getId())
 							.url(url)
@@ -102,8 +102,6 @@ public class UserServiceImpl implements IUserService{
 			// Send email verfication
 			sendAccountVerificationEmail(user,url);
 			//String verificationUrl = getVerificationUrl(UUID.randomUUID().toString(),VerificationTypeEnum.ACCOUNT.getType());
-			//jdbc.update(UserQuery.INSERT_ACCOUNT_VERIFICATION_QUERY, Map.of("userId", user.getId(),"url", verificationUrl));
-			//emailService.setVerificationUrl(user.getFirstName(),user.getEmail(),VerificationTypeEnum.ACCOUNT);
 			
 			return UserDTOMapper.fromUser(user);
 		}
@@ -139,6 +137,15 @@ public class UserServiceImpl implements IUserService{
 		return users;
 	}
 
+	@Override
+	public User update(User user){
+		return userRepository.save(user);
+	}
+	@Override
+	public boolean enableUser(Long userId){
+		return userRepository.enableUser(userId);
+	}
+
 	private void sendAccountVerificationEmail(User user, String url) throws UnsupportedEncodingException, MessagingException
 	{
 		String sendTo = user.getEmail();
@@ -147,7 +154,7 @@ public class UserServiceImpl implements IUserService{
 				emailBody +="<p>Thank you for registering with us, ";
 				emailBody +="Please, follow the link below to complete your registration.</p>";
 				emailBody +="<a href=\"" + url + "\">Verify your OTP to activate your account</a>";
-				emailBody +="<p>Thank you <br> Users Registration Portal Service</p>";
+				emailBody +="<p>Thank you, <br> Users Registration Portal Service</p>";
 		emailUtil.sendOtpEmail(sendTo, emailSubject,emailBody);
 	}
 

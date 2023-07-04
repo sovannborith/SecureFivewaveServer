@@ -2,7 +2,6 @@
 package com.securefivewave.service.implementation;
 
 import org.springframework.stereotype.Service;
-
 import com.securefivewave.entity.UserOtp;
 import com.securefivewave.repository.IUserOtpRepository;
 import com.securefivewave.service.IUserOtpService;

@@ -1,9 +1,10 @@
 package com.securefivewave.auth;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.securefivewave.auth.service.AuthenticationService;
@@ -35,6 +36,18 @@ public class AuthenticationController {
 		try {
 			return ResponseEntity.ok(authService.authenticate(request));
 		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+	}
+
+	@PutMapping("/verify-otp")
+	public ResponseEntity<OtpResponse> verifyOtp (@RequestBody @Valid @RequestParam String email, @RequestParam String otp) {
+		try {			
+			return ResponseEntity.ok(authService.verifyOtp(email, otp));
+		}
+
 		catch(Exception e)
 		{
 			throw e;

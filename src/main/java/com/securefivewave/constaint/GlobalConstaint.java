@@ -6,7 +6,7 @@ public class GlobalConstaint {
 
 	public static final int PASSWORD_STRENGTH =12;
 
-    public static final int OTP_EXPIRED_MINUTE =5;
+    public static final int OTP_EXPIRED_MINUTE =15;
 
 	public static final String AUTH_HEADER ="Authorization";
 
@@ -20,6 +20,10 @@ public class GlobalConstaint {
 
     public static final String USER_IS_NOT_FULLY_REGISTER = "User is not fully registered";
 
+    public static final String USER_ACCOUNT_ALREADY_VERIFIED = "User account already verified. Please proceed to login.";
+
+    public static final String USER_ACCOUNT_IS_VERIFIED = "User account is verified successfully";
+
     public static final String USER_IS_NOT_REGISTERED = "User is already registered";
 
     public static final String FORBIDDEN_ACCESS = "403 access denied";
@@ -29,6 +33,7 @@ public class GlobalConstaint {
     public static final String TOKEN_IS_EXPIRED = "Token is already expired";
 
     public static final String OTP_IS_INVALID = "Otp is invalid";
+
     public static final String OTP_IS_EXPIRED ="Otp is expired";
 
     public static final String REFRESH_TOKEN_CANNOT_GENERATE = "Refresh Token Can't Generated";

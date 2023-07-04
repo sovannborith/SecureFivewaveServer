@@ -38,6 +38,8 @@ public class UserToken {
 	@NotEmpty(message = "Access token cannot be empty")
 	@Column(name = "access_token")
 	private String accessToken;
+	@Column(name = "refresh_token")
+	private String refreshToken;
 	@Column(name = "is_revoked")
 	private boolean isRevoked;
 	@Column(name = "is_expired")
