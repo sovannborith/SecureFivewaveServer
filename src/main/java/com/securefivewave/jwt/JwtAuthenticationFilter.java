@@ -21,8 +21,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
+
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtService jwtService;
@@ -47,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		if(userEmail !=null && SecurityContextHolder.getContext().getAuthentication()==null) {
 			UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 		
-			if(jwtService.isTokenValid(userEmail, userDetails)) {
+			if(jwtService.isTokenValid(userEmail, userDetails.getUsername())) {
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
 				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(authToken);

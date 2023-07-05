@@ -7,10 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import com.securefivewave.auth.service.SecureFivewaveUserDetail;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -30,36 +27,37 @@ public class JwtService {
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
 	}
+
 	
-	
-	public String generateToken( SecureFivewaveUserDetail userDetails) {
-		return generateToken(new HashMap<>(), userDetails);
+		
+	public String generateToken( String email) {
+		return generateToken(new HashMap<>(), email);
 	}
-	public String generateToken(Map<String,Object> extraClaim, SecureFivewaveUserDetail userDetails) {
-		return generateToken(new HashMap<>(), userDetails, jwtExpiration);
+	public String generateToken(Map<String,Object> extraClaim, String email) {
+		return generateToken(new HashMap<>(), email, jwtExpiration);
 	}
-	public String generateToken(Map<String,Object> extraClaim, SecureFivewaveUserDetail userDetails,long expiration) {
-		return buildToken(extraClaim, userDetails,expiration);
+	public String generateToken(Map<String,Object> extraClaim, String email,long expiration) {
+		return buildToken(extraClaim, email,expiration);
 	}
 
-	public String generateRefreshToken(SecureFivewaveUserDetail userDetails) {
-		return buildToken(new HashMap<>(), userDetails,refreshExpiration);
+	public String generateRefreshToken(String email) {
+		return buildToken(new HashMap<>(), email,refreshExpiration);
 	}
 
-	private String buildToken(Map<String,Object> extraClaim, SecureFivewaveUserDetail userDetails,long expiration){
+	private String buildToken(Map<String,Object> extraClaim, String email,long expiration){
 		return Jwts
 				.builder() 
 				.setClaims(extraClaim)
-				.setSubject(userDetails.getUsername())
+				.setSubject(email)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis()+ expiration))
 				.signWith(getSignInKey(),SignatureAlgorithm.HS256)
 				.compact();
 	}
 	
-	public boolean isTokenValid(String token, UserDetails userDetails) {
+	public boolean isTokenValid(String token, String email) {
 		final String userName =extractUsername(token);
-		return userName.equals(userDetails.getUsername()) && !isTokenExpired(token);
+		return userName.toLowerCase().equals(email.toLowerCase()) && !isTokenExpired(token);
 	}
 	
 	private boolean isTokenExpired(String token) {

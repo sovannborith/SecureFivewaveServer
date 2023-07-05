@@ -12,7 +12,7 @@ import com.securefivewave.entity.UserToken;
 public interface IUserTokenRepository extends ListCrudRepository<UserToken, Long> {
 
 	@Query(value = "SELECT U.* from TBL_USER_TOKEN U WHERE USER_ID=:userId", nativeQuery = true)
-	List<UserToken> getUserTokenByUserId(@Param("userId") Long userId);
+	UserToken getUserTokenByUserId(@Param("userId") Long userId);
 	
 	@Query(value = "SELECT U.* from TBL_USER_TOKEN U WHERE U.ACCESS_TOKEN=:token", nativeQuery=true)
 	UserToken getUserTokenByToken(@Param("token") String token);

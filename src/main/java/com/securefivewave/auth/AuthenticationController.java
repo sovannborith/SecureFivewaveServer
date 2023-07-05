@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.securefivewave.auth.service.AuthenticationService;
+import com.securefivewave.service.implementation.UserOtpServiceImpl;
 import com.securefivewave.service.implementation.UserTokenServiceImpl;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +25,7 @@ public class AuthenticationController {
 
 	private final AuthenticationService authService;
 	private final UserTokenServiceImpl tokenServiceImpl;
+	private final UserOtpServiceImpl userOtpServiceImpl;
 	
 	@PostMapping("/register")
 	public ResponseEntity<RegisterResponse> register (@RequestBody @Valid RegisterRequest request) throws Exception{
@@ -42,10 +44,23 @@ public class AuthenticationController {
 		}
 	}
 
-	@PutMapping("/verify-otp")
+	@PutMapping("/verify_otp")
 	public ResponseEntity<OtpResponse> verifyOtp (@RequestBody @Valid @RequestParam String email, @RequestParam String otp) {
 		try {			
 			return ResponseEntity.ok(authService.verifyOtp(email, otp));
+		}
+
+		catch(Exception e)
+		{
+			throw e;
+		}
+	}
+
+	@PutMapping("/resend_otp")
+	public ResponseEntity<OtpResponse> resendOtp (@RequestBody @Valid @RequestParam String email) {
+		try {			
+			
+			return ResponseEntity.ok(userOtpServiceImpl.regenerateOtp(email));
 		}
 
 		catch(Exception e)

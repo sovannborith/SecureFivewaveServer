@@ -1,10 +1,25 @@
 
 package com.securefivewave.service.implementation;
 
+import java.io.UnsupportedEncodingException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
+
+import com.securefivewave.auth.OtpResponse;
+import com.securefivewave.constaint.GlobalConstaint;
+import com.securefivewave.entity.AccountVerification;
+import com.securefivewave.entity.User;
 import com.securefivewave.entity.UserOtp;
 import com.securefivewave.repository.IUserOtpRepository;
+import com.securefivewave.repository.IUserRepository;
 import com.securefivewave.service.IUserOtpService;
+import com.securefivewave.util.email.EmailUtil;
+import com.securefivewave.util.otp.OtpUtil;
+
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -12,6 +27,10 @@ import lombok.RequiredArgsConstructor;
 public class UserOtpServiceImpl implements IUserOtpService{
 	
 	private final IUserOtpRepository userOtpRepository;
+	private final IUserRepository userRepository;
+	private final AccountVerificationServiceImpl accountVerificationServiceImpl;
+	private final OtpUtil otpUtil;
+	private final EmailUtil emailUtil;
 	@Override
 	public UserOtp createUserToken(UserOtp userOtp) {
 		return userOtpRepository.save(userOtp);
@@ -35,6 +54,111 @@ public class UserOtpServiceImpl implements IUserOtpService{
 	@Override
 	public void deleteById(Long id) {
 		userOtpRepository.deleteById(id);
+	}
+
+	public OtpResponse verifyOtp(String email, String otp)
+	{
+		try{
+			User user = userRepository.getUserByEmail(email);
+			
+			if(user !=null)
+			{
+				if(user.getIsEnable()){
+					return OtpResponse.builder()
+							.result(GlobalConstaint.USER_ACCOUNT_ALREADY_VERIFIED)
+							.build();
+				}
+				UserOtp userOtp = this.getUserOtpByUserId(user.getId());
+				if(userOtp ==null){
+					return OtpResponse.builder()
+							.result(GlobalConstaint.INVALID_EMAIL_ADDRESS)
+							.build();
+				}
+				
+				if(userOtp.getUserOtp().equals(otp)){
+					Long timeDiff =Duration.between(LocalDateTime.now(), userOtp.getOtpExpiredAt()).toMillis();
+					if(timeDiff<=0){
+					// Otp is already expired
+					return OtpResponse.builder()
+							.result(GlobalConstaint.OTP_IS_EXPIRED)
+							.build();
+					}
+					//Update user to enabled
+					user.setIsEnable(true);
+					userRepository.save(user);
+					return OtpResponse.builder()
+							.result(GlobalConstaint.USER_ACCOUNT_IS_VERIFIED)
+							.build();
+				}
+				else{
+					return OtpResponse.builder()
+							.result(GlobalConstaint.OTP_IS_INVALID)
+							.build();
+				}
+			}
+			else{
+				return OtpResponse.builder()
+				.result(GlobalConstaint.INVALID_EMAIL_ADDRESS)
+				.build();
+			}
+		}
+		catch (Exception e){
+			throw e;
+		}
+	}
+
+	public OtpResponse regenerateOtp(String email){
+		try{
+			User user = userRepository.getUserByEmail(email);
+			if(user==null) return OtpResponse.builder()
+				.result(GlobalConstaint.INVALID_EMAIL_ADDRESS)
+				.build();
+
+			UserOtp userOtp = userOtpRepository.getUserOtpByUserId(user.getId());
+			if(userOtp ==null) 
+			{
+				return OtpResponse.builder()
+				.result(GlobalConstaint.INVALID_EMAIL_ADDRESS)
+				.build();
+			}
+			String newOtp = otpUtil.generateOtp();
+			userOtp.setUserOtp(newOtp);
+			userOtp.setOtpExpiredAt(LocalDateTime.now().plusMinutes(GlobalConstaint.OTP_EXPIRED_MINUTE));
+			
+			userOtpRepository.save(userOtp);
+			UUID uuid = UUID.randomUUID();
+			String url = GlobalConstaint.BASED_URL + "/auth/verify_otp?email=" + user.getEmail() + "&otp=" + newOtp + "&uid=" + uuid.toString();
+			AccountVerification av =AccountVerification.builder()
+							.userId(user.getId())
+							.url(url)
+							.createdAt(LocalDateTime.now())
+							.build();
+			accountVerificationServiceImpl.createAccountVerfication(av);
+			sendAccountVerificationEmail(user,url);
+
+			return OtpResponse.builder()
+				.result(GlobalConstaint.OTP_RESEND_SUCCESSFUL)
+				.build();
+
+		}
+		catch(Exception e){
+			return OtpResponse.builder()
+				.result(GlobalConstaint.OTP_COMMON_ERROR + " <br><br>" + e.getMessage())
+				.build();
+		}
+		
+	}
+	
+	private void sendAccountVerificationEmail(User user, String url) throws UnsupportedEncodingException, MessagingException
+	{
+		String sendTo = user.getEmail();
+		String emailSubject = "OTP Verfication";
+		String emailBody ="<p>Hi, " + user.getFirstName() + "</p>";
+				emailBody +="<p>Thank you for registering with us, ";
+				emailBody +="Please, follow the link below to complete your registration.</p>";
+				emailBody +="<a href=\"" + url + "\">Verify your OTP to activate your account</a>";
+				emailBody +="<p>Thank you, <br> Users Registration Portal Service</p>";
+		emailUtil.sendOtpEmail(sendTo, emailSubject,emailBody);
 	}
 	
 }

@@ -8,9 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.securefivewave.auth.service.SecureFivewaveUserDetail;
 import com.securefivewave.constaint.GlobalConstaint;
 import com.securefivewave.dto.UserDTO;
 import com.securefivewave.dto.UserRoleDTO;
@@ -46,8 +49,9 @@ public class UserServiceImpl implements IUserService{
 	private final AccountVerificationServiceImpl accountVerificationServiceImpl;
 	private final JwtService jwtService;
 	private final UserTokenServiceImpl userTokenServiceImpl;
-	private final RoleServiceImpl roleServiceImpl;
 	private final EmailUtil emailUtil;
+	private final PasswordEncoder passwordEncoder;
+	private final AuthenticationManager authManager;
 
 	@Override
 	public UserDTO createUser(User user) throws Exception {
@@ -83,8 +87,8 @@ public class UserServiceImpl implements IUserService{
 							.otpExpiredAt(LocalDateTime.now().plusMinutes(GlobalConstaint.OTP_EXPIRED_MINUTE))
 							.build();
 			// Save user token
-			SecureFivewaveUserDetail userDetails = new SecureFivewaveUserDetail(user, userRoleServiceImpl, roleServiceImpl);
-			String jwtToken = jwtService.generateToken(userDetails);
+			//SecureFivewaveUserDetail userDetails = new SecureFivewaveUserDetail(user, userRoleServiceImpl, roleServiceImpl);
+			String jwtToken = jwtService.generateToken(user.getEmail());
 			revokedAllValidUserTokenByUserId(user.getId());// Revoked all valid tokens
 			saveUserToken(user,jwtToken); // Save user token
 			
@@ -92,7 +96,7 @@ public class UserServiceImpl implements IUserService{
 			userOtpServiceImpl.createUserToken(userOtp);
 			// Save Account verification
 			UUID uuid = UUID.randomUUID();
-			String url = GlobalConstaint.BASED_URL + "/auth/verify-otp?email=" + user.getEmail() + "&otp=" + userOtp.getUserOtp() + "&uid=" + uuid.toString();
+			String url = GlobalConstaint.BASED_URL + "/auth/verify_otp?email=" + user.getEmail() + "&otp=" + userOtp.getUserOtp() + "&uid=" + uuid.toString();
 			AccountVerification av =AccountVerification.builder()
 							.userId(user.getId())
 							.url(url)
@@ -146,6 +150,40 @@ public class UserServiceImpl implements IUserService{
 		return userRepository.enableUser(userId);
 	}
 
+	public boolean login (String email, String password)
+	{
+		try{
+			User user = userRepository.getUserByEmail(email);
+			if(user ==null)
+			{
+				throw new UsernameNotFoundException("Login Failed! Please try again.");
+			}
+			if(user.getPassword() != passwordEncoder.encode(password))
+			{
+				throw new UsernameNotFoundException("Login Failed! Please try again.");
+			}
+			if(!user.getIsEnable() || user.getIsLocked())
+			{
+				throw new UsernameNotFoundException("Login Failed! Please try again.");
+			}
+			Authentication authentication =  authManager.authenticate(new UsernamePasswordAuthenticationToken(email,password));
+			if(authentication.isAuthenticated())
+			{
+				log.info(jwtService.generateToken(email));
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+			
+		}
+		catch(Exception e)
+		{
+			throw new UsernameNotFoundException("Login Failed! Please try again.");
+		}
+	}
+
 	private void sendAccountVerificationEmail(User user, String url) throws UnsupportedEncodingException, MessagingException
 	{
 		String sendTo = user.getEmail();
@@ -167,5 +205,7 @@ public class UserServiceImpl implements IUserService{
 	{						
 		userTokenServiceImpl.revokedAllValidUserTokenByUserId(Id);				
 	}
+
+
 
 }

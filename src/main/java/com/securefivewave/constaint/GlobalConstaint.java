@@ -6,11 +6,13 @@ public class GlobalConstaint {
 
 	public static final int PASSWORD_STRENGTH =12;
 
-    public static final int OTP_EXPIRED_MINUTE =15;
+    public static final int OTP_EXPIRED_MINUTE =2;
 
 	public static final String AUTH_HEADER ="Authorization";
 
 	public static final String[] UN_SECURED_URLs = {"/api/v1/auth/**"};
+
+    public static final String[] SECURED_URLs = {"/api/v1/admin/**","/api/v1/user/**"};
 
     public static final String BASED_URL ="http://localhost:9191/api/v1";
 	
@@ -34,7 +36,11 @@ public class GlobalConstaint {
 
     public static final String OTP_IS_INVALID = "Otp is invalid";
 
-    public static final String OTP_IS_EXPIRED ="Otp is expired";
+    public static final String OTP_COMMON_ERROR = "Error in sending new Otp. Please try again.";
+
+    public static final String OTP_RESEND_SUCCESSFUL = "New Otp successfully resend. Please check your email and verify.";
+
+    public static final String OTP_IS_EXPIRED ="Otp is expired. Please generate a new one.";
 
     public static final String REFRESH_TOKEN_CANNOT_GENERATE = "Refresh Token Can't Generated";
 
@@ -57,5 +63,7 @@ public class GlobalConstaint {
     public static final String INVALID_FILE_FORMAT = "Invalid file format";
 
     public static final String INVALID_FILE_SIZE = "Invalid file size";
+
+    public static final String LOGIN_FAILED = "Login failed. Please try again.";
 
 }

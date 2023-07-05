@@ -5,7 +5,7 @@ import com.securefivewave.entity.UserToken;
 
 public interface IUserTokenService {
     public UserToken createUserToken(UserToken userToken);
-    public List<UserToken> getUserTokenByUserId(Long userId);
+    public UserToken getUserTokenByUserId(Long userId);
     public UserToken getUserTokenById(Long id);
     public UserToken getUserTokenByToken(String token);
     public UserToken update(UserToken userToken);

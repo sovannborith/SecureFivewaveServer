@@ -8,13 +8,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.securefivewave.constaint.GlobalConstaint;
 import com.securefivewave.jwt.JwtAuthenticationFilter;
 
 
 import lombok.RequiredArgsConstructor;
-
-@EnableWebSecurity
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
@@ -26,8 +27,8 @@ public class SecurityConfiguration {
         
 		return http
 				.authorizeHttpRequests( auth -> {
-                    auth.requestMatchers("/api/v1/auth/**").permitAll();
-                    auth.requestMatchers("/api/v1/admin/**","/api/v1/user/**").hasAuthority("ADMIN");
+                    auth.requestMatchers(GlobalConstaint.UN_SECURED_URLs).permitAll();
+                    auth.requestMatchers(GlobalConstaint.SECURED_URLs).hasAnyAuthority("ADMIN");
                     auth.anyRequest().authenticated();
                 })
                 .csrf(csrf -> csrf.disable())                
