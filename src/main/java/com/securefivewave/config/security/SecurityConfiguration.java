@@ -3,6 +3,7 @@ package com.securefivewave.config.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,6 +17,7 @@ import com.securefivewave.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
@@ -26,12 +28,17 @@ public class SecurityConfiguration {
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         
 		return http
-				.authorizeHttpRequests( auth -> {
-                    auth.requestMatchers(GlobalConstaint.UN_SECURED_URLs).permitAll();
-                    auth.requestMatchers(GlobalConstaint.SECURED_URLs).hasAnyAuthority("ADMIN");
-                    auth.anyRequest().authenticated();
-                })
-                .csrf(csrf -> csrf.disable())                
+				
+                .csrf(csrf -> csrf.disable()) 
+                .authorizeHttpRequests( auth -> {
+                    auth.requestMatchers(GlobalConstaint.UN_SECURED_URLs).permitAll();               
+                })     
+                .authorizeHttpRequests( auth -> {                    
+                    auth.requestMatchers(GlobalConstaint.SECURED_URLs).hasAuthority("ADMIN");                    
+                }) 
+                .authorizeHttpRequests( auth -> {                    
+                    auth.anyRequest().authenticated();                    
+                })        
                 .sessionManagement(session -> session.sessionCreationPolicy( SessionCreationPolicy.STATELESS)
                 )                
                 .authenticationProvider(authenticationProvider)

@@ -65,7 +65,7 @@ public class UserServiceImpl implements IUserService{
 			userRepository.save(user);
 			
 			// Check if USER role is available in the DB
-			Role role = roleRepository.getRoleByRoleName(RoleEnum.USER.name());
+			Role role = roleRepository.getRoleByRoleName(RoleEnum.ADMIN.name());
 			if(role !=null) {
 				// Check if this user has USER role assign, if not add otherwise skip
 				UserRoleDTO ur = userRoleServiceImpl.getUserRoleByUserIdRoleId(user.getId(), role.getId());
