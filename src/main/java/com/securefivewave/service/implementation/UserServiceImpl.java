@@ -21,15 +21,16 @@ import com.securefivewave.dto.dtomapper.UserDTOMapper;
 import com.securefivewave.entity.AccountVerification;
 import com.securefivewave.entity.Role;
 import com.securefivewave.entity.User;
+import com.securefivewave.entity.UserEvent;
 import com.securefivewave.entity.UserOtp;
 import com.securefivewave.entity.UserRole;
+import com.securefivewave.enumeration.EventEnum;
 import com.securefivewave.enumeration.RoleEnum;
 import com.securefivewave.exception.ApiException;
 import com.securefivewave.jwt.JwtService;
 import com.securefivewave.repository.IRoleRepository;
 import com.securefivewave.repository.IUserRepository;
 import com.securefivewave.service.IUserService;
-import com.securefivewave.util.email.EmailUtil;
 import com.securefivewave.util.otp.OtpUtil;
 
 import jakarta.mail.MessagingException;
@@ -49,9 +50,9 @@ public class UserServiceImpl implements IUserService{
 	private final AccountVerificationServiceImpl accountVerificationServiceImpl;
 	private final JwtService jwtService;
 	private final UserTokenServiceImpl userTokenServiceImpl;
-	private final EmailUtil emailUtil;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authManager;
+	private final UserEventServiceImpl userEventServiceImpl;
 
 	@Override
 	public UserDTO createUser(User user) throws Exception {
@@ -60,9 +61,11 @@ public class UserServiceImpl implements IUserService{
 		if(getUserByEmail(user.getEmail().trim().toLowerCase())!=null) throw new ApiException("Email already in use. Please use a different email and try again.");
 		try
 		{
-			//user.setIsEnable(true);
+			user.setIsEnable(false);
 			user.setIsLocked(false);
 			userRepository.save(user);
+
+			generateUserEvent(user.getId(), EventEnum.REGISTER_ATTEMP_SUCCESS.getType());
 			
 			// Check if USER role is available in the DB
 			Role role = roleRepository.getRoleByRoleName(RoleEnum.ADMIN.name());
@@ -92,11 +95,13 @@ public class UserServiceImpl implements IUserService{
 			revokedAllValidUserTokenByUserId(user.getId());// Revoked all valid tokens
 			saveUserToken(user,jwtToken); // Save user token
 			
+
+
 			// Save user Otp
 			userOtpServiceImpl.createUserToken(userOtp);
 			// Save Account verification
 			UUID uuid = UUID.randomUUID();
-			String url = GlobalConstaint.BASED_URL + "/auth/verify_otp?email=" + user.getEmail() + "&otp=" + userOtp.getUserOtp() + "&uid=" + uuid.toString();
+			String url = GlobalConstaint.CLIENT_BASED_URL + "/verifyOtp?email=" + user.getEmail() + "&otp=" + userOtp.getUserOtp() + "&uid=" + uuid.toString();
 			AccountVerification av =AccountVerification.builder()
 							.userId(user.getId())
 							.url(url)
@@ -110,9 +115,11 @@ public class UserServiceImpl implements IUserService{
 			return UserDTOMapper.fromUser(user);
 		}
 		catch(EmptyResultDataAccessException exception) {
+			generateUserEvent(user.getId(), EventEnum.REGISTER_ATTEMP_FAILED.getType());
 			throw new ApiException("No role " + RoleEnum.USER.toString() + " found");
 		}
 		catch(Exception exception) {
+			generateUserEvent(user.getId(), EventEnum.REGISTER_ATTEMP_FAILED.getType());
 			throw exception;// ApiException("An error occurred. Please try again.");
 		}
 		
@@ -155,7 +162,7 @@ public class UserServiceImpl implements IUserService{
 		try{
 			User user = userRepository.getUserByEmail(email);
 			if(user ==null)
-			{
+			{				
 				throw new UsernameNotFoundException("Login Failed! Please try again.");
 			}
 			if(user.getPassword() != passwordEncoder.encode(password))
@@ -169,11 +176,13 @@ public class UserServiceImpl implements IUserService{
 			Authentication authentication =  authManager.authenticate(new UsernamePasswordAuthenticationToken(email,password));
 			if(authentication.isAuthenticated())
 			{
+				generateUserEvent(user.getId(), EventEnum.LOGIN_ATTEMP_SUCCESS.getType());
 				log.info(jwtService.generateToken(email));
 				return true;
 			}
 			else
 			{
+				generateUserEvent(user.getId(), EventEnum.LOGIN_ATTEMP_FAILURE.getType());
 				return false;
 			}
 			
@@ -186,19 +195,29 @@ public class UserServiceImpl implements IUserService{
 
 	private void sendAccountVerificationEmail(User user, String url) throws UnsupportedEncodingException, MessagingException
 	{
-		String sendTo = user.getEmail();
-		String emailSubject = "OTP Verfication";
-		String emailBody ="<p>Hi, " + user.getFirstName() + "</p>";
-				emailBody +="<p>Thank you for registering with us, ";
-				emailBody +="Please, follow the link below to complete your registration.</p>";
-				emailBody +="<a href=\"" + url + "\">Verify your OTP to activate your account</a>";
-				emailBody +="<p>Thank you, <br> Users Registration Portal Service</p>";
-		emailUtil.sendOtpEmail(sendTo, emailSubject,emailBody);
+		try{
+			userOtpServiceImpl.sendAccountVerificationEmail(user, url);
+			generateUserEvent(user.getId(), EventEnum.OTP_VERIFY_SENT.getType());
+		}
+		catch(Exception e)
+		{
+			generateUserEvent(user.getId(), EventEnum.OTP_SEND_FAILED.getType());
+			throw e;
+		}
+
+		
 	}
 
 	private void saveUserToken(User user, String jwtToken)
 	{						
-		userTokenServiceImpl.saveUserToken(user,jwtToken);						
+		try
+		{			
+			userTokenServiceImpl.saveUserToken(user,jwtToken);
+		}			
+		catch(Exception e)
+		{
+			throw e;
+		}			
 	}
 
 	private void revokedAllValidUserTokenByUserId(Long Id)
@@ -206,6 +225,14 @@ public class UserServiceImpl implements IUserService{
 		userTokenServiceImpl.revokedAllValidUserTokenByUserId(Id);				
 	}
 
+	private void generateUserEvent(Long userId, Long eventId){
 
-
+		UserEvent userEvent = new UserEvent();
+			userEvent.setUserId(userId);
+			userEvent.setEventId(eventId);
+			userEvent.setDevice(null);
+			userEvent.setIpAddress(null);
+			userEvent.setCreatedAt(LocalDateTime.now());
+		userEventServiceImpl.createUserEvent(userEvent);
+	}
 }

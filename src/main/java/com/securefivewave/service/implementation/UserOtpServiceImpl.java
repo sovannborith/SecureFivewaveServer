@@ -12,7 +12,9 @@ import com.securefivewave.auth.OtpResponse;
 import com.securefivewave.constaint.GlobalConstaint;
 import com.securefivewave.entity.AccountVerification;
 import com.securefivewave.entity.User;
+import com.securefivewave.entity.UserEvent;
 import com.securefivewave.entity.UserOtp;
+import com.securefivewave.enumeration.EventEnum;
 import com.securefivewave.repository.IUserOtpRepository;
 import com.securefivewave.repository.IUserRepository;
 import com.securefivewave.service.IUserOtpService;
@@ -31,6 +33,8 @@ public class UserOtpServiceImpl implements IUserOtpService{
 	private final AccountVerificationServiceImpl accountVerificationServiceImpl;
 	private final OtpUtil otpUtil;
 	private final EmailUtil emailUtil;
+	private final UserEventServiceImpl userEventServiceImpl;
+
 	@Override
 	public UserOtp createUserToken(UserOtp userOtp) {
 		return userOtpRepository.save(userOtp);
@@ -59,17 +63,20 @@ public class UserOtpServiceImpl implements IUserOtpService{
 	public OtpResponse verifyOtp(String email, String otp)
 	{
 		try{
+			
 			User user = userRepository.getUserByEmail(email);
 			
 			if(user !=null)
 			{
 				if(user.getIsEnable()){
+					generateUserEvent(user.getId(),EventEnum.OTP_VERIFY_FAILED.getType());
 					return OtpResponse.builder()
 							.result(GlobalConstaint.USER_ACCOUNT_ALREADY_VERIFIED)
 							.build();
 				}
 				UserOtp userOtp = this.getUserOtpByUserId(user.getId());
 				if(userOtp ==null){
+					generateUserEvent(user.getId(),EventEnum.OTP_VERIFY_FAILED.getType());
 					return OtpResponse.builder()
 							.result(GlobalConstaint.INVALID_EMAIL_ADDRESS)
 							.build();
@@ -79,6 +86,7 @@ public class UserOtpServiceImpl implements IUserOtpService{
 					Long timeDiff =Duration.between(LocalDateTime.now(), userOtp.getOtpExpiredAt()).toMillis();
 					if(timeDiff<=0){
 					// Otp is already expired
+					generateUserEvent(user.getId(),EventEnum.OTP_VERIFY_FAILED.getType());
 					return OtpResponse.builder()
 							.result(GlobalConstaint.OTP_IS_EXPIRED)
 							.build();
@@ -86,17 +94,20 @@ public class UserOtpServiceImpl implements IUserOtpService{
 					//Update user to enabled
 					user.setIsEnable(true);
 					userRepository.save(user);
+					generateUserEvent(user.getId(),EventEnum.OTP_VERIFY_SUCCESSED.getType());
 					return OtpResponse.builder()
 							.result(GlobalConstaint.USER_ACCOUNT_IS_VERIFIED)
 							.build();
 				}
 				else{
+					generateUserEvent(user.getId(),EventEnum.OTP_VERIFY_FAILED.getType());
 					return OtpResponse.builder()
 							.result(GlobalConstaint.OTP_IS_INVALID)
 							.build();
 				}
 			}
 			else{
+				
 				return OtpResponse.builder()
 				.result(GlobalConstaint.INVALID_EMAIL_ADDRESS)
 				.build();
@@ -127,7 +138,7 @@ public class UserOtpServiceImpl implements IUserOtpService{
 			
 			userOtpRepository.save(userOtp);
 			UUID uuid = UUID.randomUUID();
-			String url = GlobalConstaint.BASED_URL + "/auth/verify_otp?email=" + user.getEmail() + "&otp=" + newOtp + "&uid=" + uuid.toString();
+			String url = GlobalConstaint.CLIENT_BASED_URL + "/auth/verify_otp?email=" + user.getEmail() + "&otp=" + newOtp + "&uid=" + uuid.toString();
 			AccountVerification av =AccountVerification.builder()
 							.userId(user.getId())
 							.url(url)
@@ -149,7 +160,7 @@ public class UserOtpServiceImpl implements IUserOtpService{
 		
 	}
 	
-	private void sendAccountVerificationEmail(User user, String url) throws UnsupportedEncodingException, MessagingException
+	public void sendAccountVerificationEmail(User user, String url) throws UnsupportedEncodingException, MessagingException
 	{
 		String sendTo = user.getEmail();
 		String emailSubject = "OTP Verfication";
@@ -159,6 +170,17 @@ public class UserOtpServiceImpl implements IUserOtpService{
 				emailBody +="<a href=\"" + url + "\">Verify your OTP to activate your account</a>";
 				emailBody +="<p>Thank you, <br> Users Registration Portal Service</p>";
 		emailUtil.sendOtpEmail(sendTo, emailSubject,emailBody);
+
 	}
 	
+	private void generateUserEvent(Long userId, Long eventId){
+
+		UserEvent userEvent = new UserEvent();
+			userEvent.setUserId(userId);
+			userEvent.setEventId(eventId);
+			userEvent.setDevice(null);
+			userEvent.setIpAddress(null);
+			userEvent.setCreatedAt(LocalDateTime.now());
+		userEventServiceImpl.createUserEvent(userEvent);
+	}
 }

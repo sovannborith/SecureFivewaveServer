@@ -1,39 +1,38 @@
 
 package com.securefivewave.service.implementation;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.securefivewave.entity.UserEvent;
+import com.securefivewave.repository.IUserEventRepository;
 import com.securefivewave.service.IUserEventService;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class UserEventServiceImpl implements IUserEventService{
+
+	private final IUserEventRepository userEventRepository;
 	
 	@Override
 	public UserEvent createUserEvent(UserEvent userEvent) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'createUserEvent'");
+		return userEventRepository.save(userEvent);
 	}
 	@Override
-	public UserEvent getUserEventByUserId(Long userId) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getUserEventByUserId'");
+	public List<UserEvent> getUserEventByUserId(Long userId) {
+		return userEventRepository.getUserEventByUserId(userId);
 	}
 	@Override
 	public UserEvent getUserEventById(Long id) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getUserEventById'");
+		return userEventRepository.findById(id).get();
 	}
 	@Override
 	public UserEvent update(UserEvent userEvent) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'update'");
+		return userEventRepository.save(userEvent);
 	}
 	@Override
 	public void deleteById(Long id) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+		userEventRepository.deleteById(id);
 	}
-	
 }

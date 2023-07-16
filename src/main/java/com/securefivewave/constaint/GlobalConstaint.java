@@ -12,9 +12,11 @@ public class GlobalConstaint {
 
 	public static final String[] UN_SECURED_URLs = {"/api/v1/auth/**"};
 
-    public static final String[] SECURED_URLs = {"/api/v1/admin/**","/api/v1/user/**"};
+    public static final String[] SECURED_URLs = {"/api/v1/admin/**"};
 
-    public static final String BASED_URL ="http://localhost:9191/api/v1";
+    public static final String SERVER_BASED_URL ="http://localhost:9191/api/v1";
+
+    public static final String CLIENT_BASED_URL ="http://localhost:4200";
 	
 	public static final String INVALID_USER = "Invalid user";
 

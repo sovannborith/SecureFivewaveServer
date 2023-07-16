@@ -91,7 +91,6 @@ public class UserTokenServiceImpl implements IUserTokenService{
 		userEmail = jwtService.extractUsername(refreshToken);
 		if(userEmail !=null) {
             User user = userRepository.getUserByEmail(userEmail);
-			//SecureFivewaveUserDetail userDetails = new SecureFivewaveUserDetail(user,userRoleServiceImpl,roleServiceImpl );
             
 			if(jwtService.isTokenValid(refreshToken, user.getEmail())) {
 				String accessToken = jwtService.generateToken(user.getEmail());

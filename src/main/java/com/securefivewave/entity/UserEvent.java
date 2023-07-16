@@ -10,7 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,12 +29,12 @@ public class UserEvent {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@NotEmpty(message = "User ID cannot be empty")
+	@NotNull(message = "User ID cannot be empty")
 	@Column(name = "user_id")
 	private Long userId;
-	@NotEmpty(message = "Event ID cannot be empty")
+	@NotNull(message = "Event ID cannot be empty")
 	@Column(name = "event_id")
-	private Long objectId;
+	private Long eventId;
 	@Column(name = "device")
 	private String device;
 	@Column(name = "ip_addr")

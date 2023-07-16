@@ -1,4 +1,6 @@
 package com.securefivewave.auth.service;
+import java.time.LocalDateTime;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,9 +14,13 @@ import com.securefivewave.auth.OtpResponse;
 import com.securefivewave.auth.RegisterRequest;
 import com.securefivewave.auth.RegisterResponse;
 import com.securefivewave.constaint.GlobalConstaint;
+import com.securefivewave.dto.UserDTO;
 import com.securefivewave.entity.User;
+import com.securefivewave.entity.UserEvent;
 import com.securefivewave.entity.UserToken;
+import com.securefivewave.enumeration.EventEnum;
 import com.securefivewave.jwt.JwtService;
+import com.securefivewave.service.implementation.UserEventServiceImpl;
 import com.securefivewave.service.implementation.UserOtpServiceImpl;
 import com.securefivewave.service.implementation.UserServiceImpl;
 import com.securefivewave.service.implementation.UserTokenServiceImpl;
@@ -31,6 +37,7 @@ public class AuthenticationService {
 	private final UserOtpServiceImpl userOtpServiceImpl;
 	private final UserTokenServiceImpl userTokenServiceImpl;
 	private final AuthenticationManager authenticationManager;
+	private final UserEventServiceImpl userEventServiceImpl;
 
 	public RegisterResponse register(RegisterRequest request) throws Exception {
 		try
@@ -44,7 +51,6 @@ public class AuthenticationService {
 					.password(passwordEncoder.encode(request.getPassword()))				
 					.build();
 			userServiceImpl.createUser(user);// Save registered user
-			//SecureFivewaveUserDetail userDetails = new SecureFivewaveUserDetail(user, userRoleServiceImpl, roleServiceImpl);
 			String jwtToken = jwtService.generateToken(request.getEmail());
 			String refreshToken = jwtService.generateRefreshToken(request.getEmail());
 			return RegisterResponse.builder()
@@ -83,12 +89,16 @@ public class AuthenticationService {
 			
 			else
 			{
+				UserDTO user = userServiceImpl.getUserByEmail(request.getEmail());
+				generateUserEvent(user.getId(),EventEnum.LOGIN_ATTEMP_FAILURE.getType());
 				throw new UsernameNotFoundException(GlobalConstaint.LOGIN_FAILED);
 			}
 			
 		}
 		catch(Exception e)
 		{
+			UserDTO user = userServiceImpl.getUserByEmail(request.getEmail());
+			generateUserEvent(user.getId(),EventEnum.LOGIN_ATTEMP_FAILURE.getType());
 			throw new UsernameNotFoundException(GlobalConstaint.LOGIN_FAILED);
 		}
 	}	
@@ -124,4 +134,16 @@ public class AuthenticationService {
             throw new UsernameNotFoundException(GlobalConstaint.LOGIN_FAILED);
         }
     }
+
+	private void generateUserEvent(Long userId, Long eventId){
+
+		UserEvent userEvent = new UserEvent();
+			userEvent.setUserId(userId);
+			userEvent.setEventId(eventId);
+			userEvent.setDevice(null);
+			userEvent.setIpAddress(null);
+			userEvent.setCreatedAt(LocalDateTime.now());
+		userEventServiceImpl.createUserEvent(userEvent);
+	}
+
 }

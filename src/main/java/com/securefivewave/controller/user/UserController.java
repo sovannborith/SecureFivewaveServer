@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.securefivewave.dto.UserDTO;
-import com.securefivewave.entity.HttpResponse;
 import com.securefivewave.entity.User;
+import com.securefivewave.handler.HttpResponse;
 import com.securefivewave.service.IUserService;
 import com.securefivewave.service.implementation.UserServiceImpl;
 

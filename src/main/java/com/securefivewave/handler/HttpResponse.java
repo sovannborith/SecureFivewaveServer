@@ -1,4 +1,4 @@
-package com.securefivewave.entity;
+package com.securefivewave.handler;
 
 import java.util.Map;
 

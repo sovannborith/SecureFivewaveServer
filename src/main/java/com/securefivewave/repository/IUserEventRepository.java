@@ -1,13 +1,13 @@
 package com.securefivewave.repository;
 import java.util.List;
+
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.ListCrudRepository;
+
 import com.securefivewave.entity.UserEvent;
-public interface IUserEventRepository<T extends UserEvent> {
+
+public interface IUserEventRepository extends ListCrudRepository<UserEvent, Long> {
 	
-	/*Basic CRUD Operations */
-	T create(T data);
-	List<T> list(int page, int pageSize);
-	T get(Long id);
-	T update(T data);
-	Boolean delete(Long id);
-	T getUserEventByUserIdEventId(Long userId, Long eventId);
+	@Query(value = "SELECT U.* from TBL_USER_EVENT U WHERE U.USER_ID=:userId", nativeQuery=true)
+	public List<UserEvent> getUserEventByUserId(Long userId);
 }
