@@ -8,13 +8,14 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.securefivewave.auth.OtpResponse;
 import com.securefivewave.constaint.GlobalConstaint;
 import com.securefivewave.entity.AccountVerification;
 import com.securefivewave.entity.User;
 import com.securefivewave.entity.UserEvent;
 import com.securefivewave.entity.UserOtp;
 import com.securefivewave.enumeration.EventEnum;
+import com.securefivewave.handler.response.OtpResponse;
+import com.securefivewave.handler.response.VerifyOtpResponse;
 import com.securefivewave.repository.IUserOtpRepository;
 import com.securefivewave.repository.IUserRepository;
 import com.securefivewave.service.IUserOtpService;
@@ -60,7 +61,7 @@ public class UserOtpServiceImpl implements IUserOtpService{
 		userOtpRepository.deleteById(id);
 	}
 
-	public OtpResponse verifyOtp(String email, String otp)
+	public VerifyOtpResponse verifyOtp(String email, String otp)
 	{
 		try{
 			
@@ -70,46 +71,58 @@ public class UserOtpServiceImpl implements IUserOtpService{
 			{
 				if(user.getIsEnable()){
 					generateUserEvent(user.getId(),EventEnum.OTP_VERIFY_FAILED.getType());
-					return OtpResponse.builder()
-							.result(GlobalConstaint.USER_ACCOUNT_ALREADY_VERIFIED)
+					return VerifyOtpResponse.builder()
+							.otpResponse(new OtpResponse(email, otp))
+							.success(false)
+							.message(GlobalConstaint.USER_ACCOUNT_ALREADY_VERIFIED)
 							.build();
 				}
 				UserOtp userOtp = this.getUserOtpByUserId(user.getId());
 				if(userOtp ==null){
 					generateUserEvent(user.getId(),EventEnum.OTP_VERIFY_FAILED.getType());
-					return OtpResponse.builder()
-							.result(GlobalConstaint.INVALID_EMAIL_ADDRESS)
+					return VerifyOtpResponse.builder()
+							.otpResponse(new OtpResponse(email, otp))
+							.success(false)
+							.message(GlobalConstaint.INVALID_EMAIL_ADDRESS)
 							.build();
 				}
 				
 				if(userOtp.getUserOtp().equals(otp)){
-					Long timeDiff =Duration.between(LocalDateTime.now(), userOtp.getOtpExpiredAt()).toMillis();
+					Long timeDiff =Duration.between(userOtp.getOtpExpiredAt(), LocalDateTime.now()).toMillis();
 					if(timeDiff<=0){
 					// Otp is already expired
 					generateUserEvent(user.getId(),EventEnum.OTP_VERIFY_FAILED.getType());
-					return OtpResponse.builder()
-							.result(GlobalConstaint.OTP_IS_EXPIRED)
+					return VerifyOtpResponse.builder()
+							.otpResponse(new OtpResponse(email, otp))
+							.success(false)
+							.message(GlobalConstaint.OTP_IS_EXPIRED)
 							.build();
 					}
 					//Update user to enabled
 					user.setIsEnable(true);
 					userRepository.save(user);
 					generateUserEvent(user.getId(),EventEnum.OTP_VERIFY_SUCCESSED.getType());
-					return OtpResponse.builder()
-							.result(GlobalConstaint.USER_ACCOUNT_IS_VERIFIED)
+					return VerifyOtpResponse.builder()
+							.otpResponse(new OtpResponse(email, otp))
+							.success(true)
+							.message(GlobalConstaint.USER_ACCOUNT_IS_VERIFIED)
 							.build();
 				}
 				else{
 					generateUserEvent(user.getId(),EventEnum.OTP_VERIFY_FAILED.getType());
-					return OtpResponse.builder()
-							.result(GlobalConstaint.OTP_IS_INVALID)
+					return VerifyOtpResponse.builder()
+							.otpResponse(new OtpResponse(email, otp))
+							.success(false)
+							.message(GlobalConstaint.OTP_IS_INVALID)
 							.build();
 				}
 			}
 			else{
 				
-				return OtpResponse.builder()
-				.result(GlobalConstaint.INVALID_EMAIL_ADDRESS)
+				return VerifyOtpResponse.builder()
+							.otpResponse(new OtpResponse(email, otp))
+							.success(false)
+				.message(GlobalConstaint.INVALID_EMAIL_ADDRESS)
 				.build();
 			}
 		}
@@ -118,18 +131,22 @@ public class UserOtpServiceImpl implements IUserOtpService{
 		}
 	}
 
-	public OtpResponse regenerateOtp(String email){
+	public VerifyOtpResponse regenerateOtp(String email){
 		try{
 			User user = userRepository.getUserByEmail(email);
-			if(user==null) return OtpResponse.builder()
-				.result(GlobalConstaint.INVALID_EMAIL_ADDRESS)
+			if(user==null) return VerifyOtpResponse.builder()
+							.otpResponse(new OtpResponse(email, null))
+							.success(false)
+				.message(GlobalConstaint.INVALID_EMAIL_ADDRESS)
 				.build();
 
 			UserOtp userOtp = userOtpRepository.getUserOtpByUserId(user.getId());
 			if(userOtp ==null) 
 			{
-				return OtpResponse.builder()
-				.result(GlobalConstaint.INVALID_EMAIL_ADDRESS)
+				return VerifyOtpResponse.builder()
+							.otpResponse(new OtpResponse(email, null))
+							.success(false)
+				.message(GlobalConstaint.INVALID_EMAIL_ADDRESS)
 				.build();
 			}
 			String newOtp = otpUtil.generateOtp();
@@ -147,14 +164,18 @@ public class UserOtpServiceImpl implements IUserOtpService{
 			accountVerificationServiceImpl.createAccountVerfication(av);
 			sendAccountVerificationEmail(user,url);
 
-			return OtpResponse.builder()
-				.result(GlobalConstaint.OTP_RESEND_SUCCESSFUL)
+				return VerifyOtpResponse.builder()
+							.otpResponse(new OtpResponse(email, newOtp))
+							.success(true)
+				.message(GlobalConstaint.OTP_RESEND_SUCCESSFUL)
 				.build();
 
 		}
 		catch(Exception e){
-			return OtpResponse.builder()
-				.result(GlobalConstaint.OTP_COMMON_ERROR + " <br><br>" + e.getMessage())
+			return VerifyOtpResponse.builder()
+							.otpResponse(new OtpResponse(email, null))
+							.success(false)
+				.message(GlobalConstaint.OTP_COMMON_ERROR + " <br><br>" + e.getMessage())
 				.build();
 		}
 		

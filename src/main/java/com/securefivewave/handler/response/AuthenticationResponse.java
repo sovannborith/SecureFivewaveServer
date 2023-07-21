@@ -1,12 +1,13 @@
-package com.securefivewave.auth;
+package com.securefivewave.handler.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
 import lombok.Data;
+
 @Data
 @Builder
-public class RegisterResponse {
+public class AuthenticationResponse {
 
 	@JsonProperty("access_token")
 	private String accessToken;

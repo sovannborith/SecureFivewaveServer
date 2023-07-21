@@ -6,7 +6,7 @@ public class GlobalConstaint {
 
 	public static final int PASSWORD_STRENGTH =12;
 
-    public static final int OTP_EXPIRED_MINUTE =2;
+    public static final int OTP_EXPIRED_MINUTE =10;
 
 	public static final String AUTH_HEADER ="Authorization";
 
@@ -37,6 +37,10 @@ public class GlobalConstaint {
     public static final String TOKEN_IS_EXPIRED = "Token is already expired";
 
     public static final String OTP_IS_INVALID = "Otp is invalid";
+
+    public static final String REGISTER_SUCCESS = "Registration is success. Please check your email to verify our account.";
+
+    public static final String REGISTER_FAILED = "Registration failed. Please try again.";
 
     public static final String OTP_COMMON_ERROR = "Error in sending new Otp. Please try again.";
 

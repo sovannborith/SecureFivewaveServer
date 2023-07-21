@@ -1,45 +1,24 @@
 package com.securefivewave.handler;
-
-import org.apache.http.auth.InvalidCredentialsException;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
-
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.securefivewave.exception.*;
-
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
+import com.securefivewave.handler.response.CommonResponse;
 public final class ResponseHandler {
 
     private ResponseHandler() {
         // nothing
     }
 
-    @SuppressWarnings("unchecked")
 	public static <U> ResponseEntity<CommonResponse<U>> buildSuccessResponse(U response) {
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
                 .body(CommonResponse.successResponse(response));
     }
 
-    @SuppressWarnings("rawtypes")
+    /* @SuppressWarnings("rawtypes")
 	public static ResponseEntity<CommonResponse> buildEmptySuccessResponse() {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(null);
     }
-    /*
-    @SuppressWarnings("unchecked")
-	public static <U> ResponseEntity<CommonResponse<U>> buildSuccessResponseForStaff(U response) {
-        return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON)
-                .body(CommonResponse.successResponseForStaff((CommonResponse) response));
-    }
-    */
-
+  
     @SuppressWarnings("unchecked")
 	public static <T> ResponseEntity<CommonResponse<T>> buildErrorResponse(Throwable error) {
         return buildErrorResponseEntity(error);
@@ -141,7 +120,6 @@ public final class ResponseHandler {
                 .body(CommonResponse.errorResponse(500, error.getMessage(), error));
     }
     
-    @SuppressWarnings("unchecked")
 	public static <T> ResponseEntity<CommonResponse<T>> buildCustomErrorResponse(Throwable error, Integer customCode) {
         log.error("Response Error: {}", error.getMessage(), error);
         if (error instanceof InvalidCredentialsException) {
@@ -157,5 +135,5 @@ public final class ResponseHandler {
                     .body(CommonResponse.errorResponse(500, error.getMessage()));
         }
     }
-
+ */
 }

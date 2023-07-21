@@ -1,4 +1,5 @@
 package com.securefivewave.auth;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +10,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.securefivewave.auth.service.AuthenticationService;
+import com.securefivewave.handler.request.AuthenticationRequest;
+import com.securefivewave.handler.request.RegisterRequest;
+import com.securefivewave.handler.response.AuthenticationResponse;
+import com.securefivewave.handler.response.CommonResponse;
+import com.securefivewave.handler.response.RegisterResponse;
+import com.securefivewave.handler.response.VerifyOtpResponse;
 import com.securefivewave.service.implementation.UserOtpServiceImpl;
 import com.securefivewave.service.implementation.UserTokenServiceImpl;
 
@@ -30,9 +37,17 @@ public class AuthenticationController {
 	private final UserOtpServiceImpl userOtpServiceImpl;
 	
 	@PostMapping("/register")
-	public ResponseEntity<RegisterResponse> register (@RequestBody @Valid RegisterRequest request) throws Exception{
+	public ResponseEntity<CommonResponse<RegisterResponse>> register (@RequestBody @Valid RegisterRequest request) throws Exception{
 		log.info("Registering the new user");
-		return ResponseEntity.ok(authService.register(request));
+
+		try{
+			RegisterResponse res = authService.register(request);
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.successResponse(res));
+		}
+		catch(Exception e)
+		{
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.errorResponse(e.hashCode(),e.getMessage()));
+		}
 	}
 	
 	@PostMapping("/login")
@@ -47,9 +62,11 @@ public class AuthenticationController {
 	}
 
 	@PutMapping("/verify_otp")
-	public ResponseEntity<OtpResponse> verifyOtp (@RequestBody @Valid @RequestParam String email, @RequestParam String otp) {
-		try {			
-			return ResponseEntity.ok(authService.verifyOtp(email, otp));
+	public ResponseEntity<VerifyOtpResponse> verifyOtp (@RequestBody @Valid @RequestParam String email, @RequestParam String otp) {
+		try {	
+			VerifyOtpResponse verifyOtpResponse =authService.verifyOtp(email, otp);
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(verifyOtpResponse);
+
 		}
 
 		catch(Exception e)
@@ -59,7 +76,7 @@ public class AuthenticationController {
 	}
 
 	@PutMapping("/resend_otp")
-	public ResponseEntity<OtpResponse> resendOtp (@RequestBody @Valid @RequestParam String email) {
+	public ResponseEntity<VerifyOtpResponse> resendOtp (@RequestBody @Valid @RequestParam String email) {
 		try {			
 			
 			return ResponseEntity.ok(userOtpServiceImpl.regenerateOtp(email));

@@ -1,4 +1,4 @@
-package com.securefivewave.auth;
+package com.securefivewave.handler.request;
 import lombok.Builder;
 import lombok.Data;
 

@@ -56,7 +56,6 @@ public class UserServiceImpl implements IUserService{
 
 	@Override
 	public UserDTO createUser(User user) throws Exception {
-		log.info("Adding new user...");
 		
 		if(getUserByEmail(user.getEmail().trim().toLowerCase())!=null) throw new ApiException("Email already in use. Please use a different email and try again.");
 		try
@@ -68,7 +67,7 @@ public class UserServiceImpl implements IUserService{
 			generateUserEvent(user.getId(), EventEnum.REGISTER_ATTEMP_SUCCESS.getType());
 			
 			// Check if USER role is available in the DB
-			Role role = roleRepository.getRoleByRoleName(RoleEnum.ADMIN.name());
+			Role role = roleRepository.getRoleByRoleName(RoleEnum.USER.name());
 			if(role !=null) {
 				// Check if this user has USER role assign, if not add otherwise skip
 				UserRoleDTO ur = userRoleServiceImpl.getUserRoleByUserIdRoleId(user.getId(), role.getId());

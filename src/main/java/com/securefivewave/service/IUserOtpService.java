@@ -1,8 +1,8 @@
 package com.securefivewave.service;
 
 
-import com.securefivewave.auth.OtpResponse;
 import com.securefivewave.entity.UserOtp;
+import com.securefivewave.handler.response.VerifyOtpResponse;
 
 public interface IUserOtpService {
     public UserOtp createUserToken(UserOtp userToken);
@@ -11,5 +11,5 @@ public interface IUserOtpService {
     public UserOtp getUserOtpByToken(String otp);
     public UserOtp update(UserOtp userOtp);
     public void deleteById(Long id);
-    public OtpResponse regenerateOtp(String email);
+    public VerifyOtpResponse regenerateOtp(String email);
 }

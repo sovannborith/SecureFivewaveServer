@@ -8,17 +8,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.securefivewave.auth.AuthenticationRequest;
-import com.securefivewave.auth.AuthenticationResponse;
-import com.securefivewave.auth.OtpResponse;
-import com.securefivewave.auth.RegisterRequest;
-import com.securefivewave.auth.RegisterResponse;
 import com.securefivewave.constaint.GlobalConstaint;
 import com.securefivewave.dto.UserDTO;
 import com.securefivewave.entity.User;
 import com.securefivewave.entity.UserEvent;
 import com.securefivewave.entity.UserToken;
 import com.securefivewave.enumeration.EventEnum;
+import com.securefivewave.handler.request.AuthenticationRequest;
+import com.securefivewave.handler.request.RegisterRequest;
+import com.securefivewave.handler.response.AuthenticationResponse;
+import com.securefivewave.handler.response.RegisterResponse;
+import com.securefivewave.handler.response.VerifyOtpResponse;
 import com.securefivewave.jwt.JwtService;
 import com.securefivewave.service.implementation.UserEventServiceImpl;
 import com.securefivewave.service.implementation.UserOtpServiceImpl;
@@ -51,16 +51,23 @@ public class AuthenticationService {
 					.password(passwordEncoder.encode(request.getPassword()))				
 					.build();
 			userServiceImpl.createUser(user);// Save registered user
-			String jwtToken = jwtService.generateToken(request.getEmail());
-			String refreshToken = jwtService.generateRefreshToken(request.getEmail());
+			/* String jwtToken = jwtService.generateToken(request.getEmail());
+			String refreshToken = jwtService.generateRefreshToken(request.getEmail()); */
 			return RegisterResponse.builder()
-					.accessToken(jwtToken)
-					.refreschToken(refreshToken)
+					.registerRequest(request)
+					.success(true)
+					.errorCode(null)
+					.message(GlobalConstaint.REGISTER_SUCCESS)
 					.build();
 		}
 		catch(Exception e)
 		{
-			throw e;
+			return RegisterResponse.builder()
+					.registerRequest(request)
+					.success(false)
+					.errorCode(e.hashCode())
+					.message(e.getMessage())
+					.build();
 		}
 	}
 	
@@ -103,7 +110,7 @@ public class AuthenticationService {
 		}
 	}	
 	
-	public OtpResponse verifyOtp(String email, String otp)
+	public VerifyOtpResponse verifyOtp(String email, String otp)
 	{
 		try{
 			return userOtpServiceImpl.verifyOtp(email, otp);
@@ -114,7 +121,7 @@ public class AuthenticationService {
 		}
 	}
 
-	public OtpResponse resendOtp(String email)
+	public VerifyOtpResponse resendOtp(String email)
 	{
 		try{
 			return userOtpServiceImpl.regenerateOtp(email);
