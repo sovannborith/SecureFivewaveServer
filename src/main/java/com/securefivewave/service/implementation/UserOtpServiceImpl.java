@@ -88,7 +88,8 @@ public class UserOtpServiceImpl implements IUserOtpService{
 				}
 				
 				if(userOtp.getUserOtp().equals(otp)){
-					Long timeDiff =Duration.between(userOtp.getOtpExpiredAt(), LocalDateTime.now()).toMillis();
+					
+					Long timeDiff =Duration.between( LocalDateTime.now(),userOtp.getOtpExpiredAt()).toMillis();
 					if(timeDiff<=0){
 					// Otp is already expired
 					generateUserEvent(user.getId(),EventEnum.OTP_VERIFY_FAILED.getType());
@@ -155,7 +156,7 @@ public class UserOtpServiceImpl implements IUserOtpService{
 			
 			userOtpRepository.save(userOtp);
 			UUID uuid = UUID.randomUUID();
-			String url = GlobalConstaint.CLIENT_BASED_URL + "/auth/verify_otp?email=" + user.getEmail() + "&otp=" + newOtp + "&uid=" + uuid.toString();
+			String url = GlobalConstaint.CLIENT_BASED_URL + "/verifyOtp?email=" + user.getEmail() + "&otp=" + userOtp.getUserOtp() + "&uid=" + uuid.toString();
 			AccountVerification av =AccountVerification.builder()
 							.userId(user.getId())
 							.url(url)

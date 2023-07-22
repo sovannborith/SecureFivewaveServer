@@ -98,7 +98,7 @@ public class UserTokenServiceImpl implements IUserTokenService{
 				saveUserToken(user, refreshToken);
                 var authResponse = AuthenticationResponse.builder()
                     .accessToken(accessToken)
-                    .refreschToken(refreshToken)
+                    .refreshToken(refreshToken)
                     .build();
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
 			}

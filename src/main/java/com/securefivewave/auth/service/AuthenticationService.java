@@ -90,7 +90,10 @@ public class AuthenticationService {
 				
 				return AuthenticationResponse.builder()
 					.accessToken(jwtToken)
-					.refreschToken(refreshToken)
+					.success(true)
+					.message(GlobalConstaint.LOGIN_SUCCESS)
+					.errorCode(null)
+					.authRequest(request)
 					.build();
 			}
 			

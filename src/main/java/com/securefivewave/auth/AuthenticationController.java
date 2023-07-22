@@ -46,14 +46,15 @@ public class AuthenticationController {
 		}
 		catch(Exception e)
 		{
-			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.errorResponse(e.hashCode(),e.getMessage()));
+			return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.errorResponse(e.hashCode(),e.getMessage()));
 		}
 	}
 	
 	@PostMapping("/login")
 	public ResponseEntity<AuthenticationResponse> login (@RequestBody @Valid AuthenticationRequest request){
 		try {
-			return ResponseEntity.ok(authService.authenticate(request));
+			AuthenticationResponse res = authService.authenticate(request);
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(res);
 		}
 		catch(Exception e)
 		{
@@ -78,8 +79,8 @@ public class AuthenticationController {
 	@PutMapping("/resend_otp")
 	public ResponseEntity<VerifyOtpResponse> resendOtp (@RequestBody @Valid @RequestParam String email) {
 		try {			
-			
-			return ResponseEntity.ok(userOtpServiceImpl.regenerateOtp(email));
+			VerifyOtpResponse res =userOtpServiceImpl.regenerateOtp(email);
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(res);
 		}
 
 		catch(Exception e)

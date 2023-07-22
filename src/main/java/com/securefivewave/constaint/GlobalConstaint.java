@@ -6,7 +6,7 @@ public class GlobalConstaint {
 
 	public static final int PASSWORD_STRENGTH =12;
 
-    public static final int OTP_EXPIRED_MINUTE =10;
+    public static final int OTP_EXPIRED_MINUTE =5;
 
 	public static final String AUTH_HEADER ="Authorization";
 
@@ -71,5 +71,7 @@ public class GlobalConstaint {
     public static final String INVALID_FILE_SIZE = "Invalid file size";
 
     public static final String LOGIN_FAILED = "Login failed. Please try again.";
+
+    public static final String LOGIN_SUCCESS = "Login success.";
 
 }
