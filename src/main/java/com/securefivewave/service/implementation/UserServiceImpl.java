@@ -92,7 +92,7 @@ public class UserServiceImpl implements IUserService{
 			//SecureFivewaveUserDetail userDetails = new SecureFivewaveUserDetail(user, userRoleServiceImpl, roleServiceImpl);
 			String jwtToken = jwtService.generateToken(user.getEmail());
 			revokedAllValidUserTokenByUserId(user.getId());// Revoked all valid tokens
-			saveUserToken(user,jwtToken); // Save user token
+			saveUserToken(user, jwtToken,jwtToken); // Save user token
 			
 
 
@@ -207,11 +207,11 @@ public class UserServiceImpl implements IUserService{
 		
 	}
 
-	private void saveUserToken(User user, String jwtToken)
+	private void saveUserToken(User user, String accessToken, String jwtToken)
 	{						
 		try
 		{			
-			userTokenServiceImpl.saveUserToken(user,jwtToken);
+			userTokenServiceImpl.saveUserToken(user,jwtToken, jwtToken);
 		}			
 		catch(Exception e)
 		{

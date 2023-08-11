@@ -59,6 +59,10 @@ public class JwtService {
 		final String userName =extractUsername(token);
 		return userName.toLowerCase().equals(email.toLowerCase()) && !isTokenExpired(token);
 	}
+
+	public Date getJwtExpiryDate(String token){
+		return extractExpiration(token);
+	}
 	
 	private boolean isTokenExpired(String token) {
 		return extractExpiration(token).before(new Date());

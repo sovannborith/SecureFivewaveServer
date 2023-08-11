@@ -14,6 +14,7 @@ import com.securefivewave.handler.request.AuthenticationRequest;
 import com.securefivewave.handler.request.RegisterRequest;
 import com.securefivewave.handler.response.AuthenticationResponse;
 import com.securefivewave.handler.response.CommonResponse;
+import com.securefivewave.handler.response.RefreshTokenResponse;
 import com.securefivewave.handler.response.RegisterResponse;
 import com.securefivewave.handler.response.VerifyOtpResponse;
 import com.securefivewave.service.implementation.UserOtpServiceImpl;
@@ -51,10 +52,10 @@ public class AuthenticationController {
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<AuthenticationResponse> login (@RequestBody @Valid AuthenticationRequest request){
+	public ResponseEntity<CommonResponse<AuthenticationResponse>> login (@RequestBody @Valid AuthenticationRequest request){
 		try {
 			AuthenticationResponse res = authService.authenticate(request);
-			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(res);
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.successResponse(res));
 		}
 		catch(Exception e)
 		{
@@ -90,9 +91,10 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/refresh_token")
-	public void refreshToken (HttpServletRequest request, HttpServletResponse response) throws Exception{
+	public ResponseEntity<RefreshTokenResponse> refreshToken (HttpServletRequest request, HttpServletResponse response) throws Exception{
 		try {
-			tokenServiceImpl.refreshToken(request,response);
+			RefreshTokenResponse token = tokenServiceImpl.refreshToken(request,response);
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(token);
 		}
 		catch(Exception e)
 		{

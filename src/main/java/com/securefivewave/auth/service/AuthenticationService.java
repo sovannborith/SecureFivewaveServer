@@ -1,5 +1,6 @@
 package com.securefivewave.auth.service;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -81,6 +82,7 @@ public class AuthenticationService {
 				
 				String jwtToken = jwtService.generateToken(request.getEmail());
 				String refreshToken = jwtService.generateRefreshToken(request.getEmail());
+				Date jwtExpiryDate = jwtService.getJwtExpiryDate(jwtToken);
 
 				userToken.setAccessToken(jwtToken);
 				userToken.setRefreshToken(refreshToken);
@@ -90,6 +92,8 @@ public class AuthenticationService {
 				
 				return AuthenticationResponse.builder()
 					.accessToken(jwtToken)
+					.jwtTokenExpiryDate(jwtExpiryDate)
+					.refreshToken(refreshToken)
 					.success(true)
 					.message(GlobalConstaint.LOGIN_SUCCESS)
 					.errorCode(null)
