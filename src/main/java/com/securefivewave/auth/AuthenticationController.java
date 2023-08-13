@@ -24,13 +24,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@RequiredArgsConstructor
-@Slf4j
 @CrossOrigin(origins = "http://localhost:4200")
+@RequiredArgsConstructor
+
 public class AuthenticationController {
 
 	private final AuthenticationService authService;
@@ -39,8 +38,7 @@ public class AuthenticationController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<CommonResponse<RegisterResponse>> register (@RequestBody @Valid RegisterRequest request) throws Exception{
-		log.info("Registering the new user");
-
+		
 		try{
 			RegisterResponse res = authService.register(request);
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.successResponse(res));

@@ -74,4 +74,16 @@ public class GlobalConstaint {
 
     public static final String LOGIN_SUCCESS = "Login success.";
 
+    public static final String PERMISSION_ADDED ="Permission added.";
+
+    public static final String PERMISSION_ADD_FAILED ="Adding permission failed. Please try again.";
+
+    public static final String PERMISSION_UPDATED ="Permission updated.";
+
+    public static final String PERMISSION_UPDATE_FAILED ="Failed updating permission. Please try again.";
+
+    public static final String PERMISSION_DELETED ="Permission deleted.";
+
+    public static final String PERMISSION_DELETE_FAILED ="Failed deleting permission. Please try again.";
+
 }

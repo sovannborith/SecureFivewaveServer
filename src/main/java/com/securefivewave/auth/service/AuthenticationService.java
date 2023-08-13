@@ -51,9 +51,7 @@ public class AuthenticationService {
 					.isLocked(false)
 					.password(passwordEncoder.encode(request.getPassword()))				
 					.build();
-			userServiceImpl.createUser(user);// Save registered user
-			/* String jwtToken = jwtService.generateToken(request.getEmail());
-			String refreshToken = jwtService.generateRefreshToken(request.getEmail()); */
+			userServiceImpl.createUser(user);
 			return RegisterResponse.builder()
 					.registerRequest(request)
 					.success(true)

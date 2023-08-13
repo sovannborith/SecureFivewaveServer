@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,10 +27,10 @@ public class Permission {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@NotEmpty(message = "Role ID cannot be empty")
+	@NotBlank(message = "Role Id cannot be blank")
 	@Column(name = "role_id")
 	private Long roleId;
-	@NotEmpty(message = "Object ID cannot be empty")
+	@NotBlank(message = "Object ID cannot be blank")
 	@Column(name = "obj_id")
 	private Long objectId;
 	@Column(name = "can_view")
@@ -41,4 +41,6 @@ public class Permission {
 	private Boolean canUpdate;
 	@Column(name = "can_delete")
 	private Boolean canDelete;
+	@Column(name = "can_all")
+	private Boolean canAll;
 }
