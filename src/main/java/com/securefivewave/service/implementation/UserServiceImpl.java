@@ -18,6 +18,7 @@ import com.securefivewave.constaint.GlobalConstaint;
 import com.securefivewave.dto.UserDTO;
 import com.securefivewave.dto.UserRoleDTO;
 import com.securefivewave.dto.dtomapper.UserDTOMapper;
+import com.securefivewave.dto.user.ChangePasswordResponse;
 import com.securefivewave.entity.AccountVerification;
 import com.securefivewave.entity.Role;
 import com.securefivewave.entity.User;
@@ -233,5 +234,33 @@ public class UserServiceImpl implements IUserService{
 			userEvent.setIpAddress(null);
 			userEvent.setCreatedAt(LocalDateTime.now());
 		userEventServiceImpl.createUserEvent(userEvent);
+	}
+
+	public ChangePasswordResponse changeUserPassword(String email, String oldPassword, String newPassword){
+		try{
+			User user = userRepository.getUserByEmail(email);
+			if(user !=null && user.getPassword()==passwordEncoder.encode(oldPassword)){
+				if(userRepository.changeUserPassword(email, newPassword)){
+					return new ChangePasswordResponse(email, passwordEncoder.encode(newPassword));
+				}
+				else
+				{
+					return null;
+				}
+			}
+			else{
+				throw new UsernameNotFoundException("Change password failed! Please try again.");
+			}
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+	}
+
+	@Override
+	public boolean changeUserPassword(String email, String newPassword) {
+		
+		return false;
 	}
 }

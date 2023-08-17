@@ -1,16 +1,19 @@
 /**
  * 
  */
-package com.securefivewave.controller.user;
+package com.securefivewave.controller;
 import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.securefivewave.dto.UserDTO;
+import com.securefivewave.dto.user.ChangePasswordRequest;
+import com.securefivewave.dto.user.ChangePasswordResponse;
 import com.securefivewave.entity.User;
 import com.securefivewave.handler.request.RegisterRequest;
 import com.securefivewave.handler.response.CommonResponse;
@@ -29,6 +32,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/v1/admin/user")
 public class UserController {
 
@@ -55,9 +59,29 @@ public class UserController {
 			return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.errorResponse(e.hashCode(),e.getMessage()));
 		}
 	}
-	@GetMapping("/list")
-	public List<UserDTO> getAllUsers(){
-		return userServiceImpl.getAllUsers();
+	@GetMapping("/getAllUsers")
+	public ResponseEntity<CommonResponse<List<UserDTO>>> getAllUsers(){
+		
+		try{
+			List<UserDTO> res = userServiceImpl.getAllUsers();
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.successResponse(res));
+		}
+		catch(Exception e)
+		{
+			return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.errorResponse(e.hashCode(),e.getMessage()));
+		}
+	}
+
+	@PostMapping("/changePassword")
+	public ResponseEntity<CommonResponse<ChangePasswordResponse>> changePassword(@RequestBody @Valid ChangePasswordRequest request){
+		try{
+			ChangePasswordResponse res = userServiceImpl.changeUserPassword(request.getEmail(), request.getOldPassword(),request.getNewPassword());
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.successResponse(res));
+		}
+		catch(Exception e)
+		{
+			return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.errorResponse(e.hashCode(),e.getMessage()));
+		}
 	}
 	/* private URI getUri() {
 		return URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/get/<userId>" ).toString());

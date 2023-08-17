@@ -31,20 +31,16 @@ public class SecurityConfiguration {
 				
                 .csrf(csrf -> csrf.disable()) 
                 .authorizeHttpRequests( auth -> {
-                    auth.requestMatchers(GlobalConstaint.UN_SECURED_URLs).permitAll();               
+                    auth.requestMatchers(GlobalConstaint.UN_SECURED_URLs).permitAll();          
                 })     
                 .authorizeHttpRequests( auth -> {                    
-                    auth.requestMatchers(GlobalConstaint.SECURED_URLs).hasAuthority("ADMIN");                    
-                }) 
-                .authorizeHttpRequests( auth -> {                    
-                    auth.anyRequest().authenticated();                    
-                })        
-                .sessionManagement(session -> session.sessionCreationPolicy( SessionCreationPolicy.STATELESS)
-                )                
+                    auth.requestMatchers(GlobalConstaint.SECURED_URLs).authenticated();             
+                })                 
+                .sessionManagement(session -> session.sessionCreationPolicy( SessionCreationPolicy.STATELESS))                
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)                
                 .build();
 		
 	}
+
 }

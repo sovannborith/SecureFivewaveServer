@@ -1,7 +1,6 @@
 package com.securefivewave.auth;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,8 +25,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
+//@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/v1/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+
 @RequiredArgsConstructor
 
 public class AuthenticationController {
@@ -88,7 +88,7 @@ public class AuthenticationController {
 		}
 	}
 
-	@PostMapping("/refresh_token")
+	@PostMapping("/refreshToken")
 	public ResponseEntity<RefreshTokenResponse> refreshToken (HttpServletRequest request, HttpServletResponse response) throws Exception{
 		try {
 			RefreshTokenResponse token = tokenServiceImpl.refreshToken(request,response);

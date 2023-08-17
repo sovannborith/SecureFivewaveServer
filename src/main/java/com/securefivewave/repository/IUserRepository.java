@@ -14,4 +14,7 @@ public interface IUserRepository extends ListCrudRepository<User, Long> {
 
 	@Query(value = "UPDATE TBL_USER SET IS_ENABLE=1 WHERE ID=:userId", nativeQuery = true)
 	boolean enableUser(@Param("userId") Long userId);
+
+	@Query(value ="UPDATE TBL_USER SET USER_PASSWORD=:newPassword WHERE EMAIL_ADDR=:email", nativeQuery = true)
+	boolean changeUserPassword(@Param("email") String email,  @Param("newPassword") String newPassword);
 }

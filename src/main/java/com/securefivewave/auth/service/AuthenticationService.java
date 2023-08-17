@@ -76,6 +76,7 @@ public class AuthenticationService {
 			boolean isLogin = this.getTokenForAuthenticatedUser(request.getEmail(),request.getPassword());
 			if(isLogin)
 			{
+				UserDTO user = userServiceImpl.getUserByEmail(request.getEmail());
 				UserToken userToken = userTokenServiceImpl.getUserTokenByUserId(userServiceImpl.getUserByEmail(request.getEmail()).getId());
 				
 				String jwtToken = jwtService.generateToken(request.getEmail());
@@ -89,6 +90,8 @@ public class AuthenticationService {
 				userTokenServiceImpl.update(userToken);
 				
 				return AuthenticationResponse.builder()
+					.id(user.getId())
+					.email(request.getEmail())
 					.accessToken(jwtToken)
 					.jwtTokenExpiryDate(jwtExpiryDate)
 					.refreshToken(refreshToken)

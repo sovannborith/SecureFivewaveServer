@@ -8,8 +8,11 @@ import org.springframework.data.repository.query.Param;
 import com.securefivewave.entity.Permission;
 public interface IPermissionRepository extends ListCrudRepository<Permission, Long> {
 
-	@Query(value = "SELECT P.* FROM TBL_USER_ROLE UR INNER JOIN TBL_PERMISSION P ON UR.role_id = P.role_id AND UR.user_id:userId", nativeQuery=true)
+	@Query(value = "SELECT P.* FROM TBL_USER_ROLE UR INNER JOIN TBL_PERMISSION P ON UR.role_id = P.role_id AND UR.user_id=:userId", nativeQuery=true)
 	List<Permission> getUserPermissionByUserId(@Param("userId") Long userId);
+
+	@Query(value = "SELECT P.* FROM TBL_USER_ROLE UR INNER JOIN TBL_PERMISSION P ON UR.role_id = P.role_id AND UR.user_id=:userId and p.obj_id=:objId", nativeQuery=true)
+	List<Permission> getUserPermissionByUserIdObjectId(@Param("userId") Long userId, @Param("objId") Long objId);
 
 	@Query(value = "SELECT U.* from TBL_PERMISSION U WHERE OBJ_ID=:objId", nativeQuery=true)
 	List<Permission> getUserPermissionByObjectId(@Param("objId") Long objId);

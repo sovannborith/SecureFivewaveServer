@@ -24,11 +24,10 @@ public class JwtService {
 	private long jwtExpiration;
 	@Value("${application.security.jwt.refresh-token.expiration}")
 	private long refreshExpiration;
+	
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
 	}
-
-	
 		
 	public String generateToken( String email) {
 		return generateToken(new HashMap<>(), email);

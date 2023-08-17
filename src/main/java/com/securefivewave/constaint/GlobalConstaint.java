@@ -10,9 +10,9 @@ public class GlobalConstaint {
 
 	public static final String AUTH_HEADER ="Authorization";
 
-	public static final String[] UN_SECURED_URLs = {"/api/v1/auth/**"};
+	public static final String[] UN_SECURED_URLs = {"/","home","/api/v1/auth/**"};
 
-    public static final String[] SECURED_URLs = {"/api/v1/admin/**"};
+    public static final String[] SECURED_URLs = {"notification","setting/**","/api/v1/admin/**"};
 
     public static final String SERVER_BASED_URL ="http://localhost:9191/api/v1";
 

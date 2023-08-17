@@ -1,4 +1,4 @@
-package com.securefivewave.controller.permission;
+package com.securefivewave.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.securefivewave.dto.permission.PermissionRequest;
 import com.securefivewave.dto.permission.PermissionResponse;
@@ -23,9 +24,9 @@ import lombok.RequiredArgsConstructor;
  *
  */
 @RestController
-@RequiredArgsConstructor
-@RequestMapping("/api/v1/admin/permission")
 @CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping("/api/v1/admin/permission")
+@RequiredArgsConstructor
 public class PermissionController {
 
 	private final PermissionServiceImpl permissionService;
@@ -52,10 +53,10 @@ public class PermissionController {
 		}
 	}
 
-	@PostMapping("/getUserPermissionByUserId")
-	public ResponseEntity<CommonResponse<UserPermissionRecord>> getPermissionByUserId (@RequestBody @Valid Long userId) throws Exception{
+	@GetMapping("/getUserPermissionByUserIdObjectId")
+	public ResponseEntity<CommonResponse<UserPermissionRecord>> getPermissionByUserIdObjectId (@RequestBody @Valid @RequestParam String email, @RequestParam Long objId) throws Exception{
 		try{
-			UserPermissionRecord rec = permissionService.getUserPermission(userId);
+			UserPermissionRecord rec = permissionService.getUserPermission(email, objId);
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.successResponse(rec));
 		}
 		catch(Exception e)

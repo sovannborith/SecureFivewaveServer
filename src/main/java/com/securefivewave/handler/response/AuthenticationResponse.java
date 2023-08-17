@@ -10,10 +10,10 @@ import lombok.Data;
 @Builder
 public class AuthenticationResponse {
 
-	//@JsonProperty("access_token")
+	private Long id;
+	private String email;
 	private String accessToken;
 	private Date jwtTokenExpiryDate;
-	//@JsonProperty("refresh_token")
 	private String refreshToken;
 	private boolean success;
 	private String message;

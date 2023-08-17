@@ -4,6 +4,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
 import com.securefivewave.constaint.GlobalConstaint;
+import com.securefivewave.dto.UserDTO;
 import com.securefivewave.dto.permission.PermissionRequest;
 import com.securefivewave.dto.permission.PermissionResponse;
 import com.securefivewave.entity.Permission;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class PermissionServiceImpl implements IPermissionService{
 
     private final IPermissionRepository permissionRepository;
+    private final UserServiceImpl userServiceImpl;
 
     public PermissionResponse createPermission(PermissionRequest request) {
         try{
@@ -54,14 +56,28 @@ public class PermissionServiceImpl implements IPermissionService{
         }
     }
 
-    public UserPermissionRecord getUserPermission(Long userId)
+    @Override
+    public List<Permission> getUserPermissionByUserIdObjectId(Long userId, Long objId) {
+        try{
+            return permissionRepository.getUserPermissionByUserIdObjectId(userId, objId);
+        }
+        catch(Exception e){
+            throw e;
+        }
+    }
+
+    public UserPermissionRecord getUserPermission(String email, Long objId)
     {
-        List<Permission> userPerm = getUserPermissionByUserId(userId);
+        UserDTO user = userServiceImpl.getUserByEmail(email);
+
+        if(user!=null){
+            List<Permission> userPerm = getUserPermissionByUserIdObjectId(user.getId(),objId);
             boolean can_view =false;
             boolean can_add =false;
             boolean can_update =false;
             boolean can_delete =false;
             boolean can_all =false;
+            Long id =(long) 1;
 
             for(Permission p : userPerm){
                 if(p.getCanView()){
@@ -81,7 +97,12 @@ public class PermissionServiceImpl implements IPermissionService{
                 }
             }
             
-            return new UserPermissionRecord(userId,can_view,can_add,can_update,can_delete,can_all);
+            return new UserPermissionRecord(id, user.getId(), objId,can_view,can_add,can_update,can_delete,can_all);
+        }
+        else
+        {
+            return null;
+        }
     }
 
     @Override
@@ -168,4 +189,6 @@ public class PermissionServiceImpl implements IPermissionService{
             throw e;
         }
     }
+
+    
 }
