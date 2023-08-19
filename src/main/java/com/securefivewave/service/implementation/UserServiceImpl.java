@@ -154,30 +154,19 @@ public class UserServiceImpl implements IUserService{
 	}
 	@Override
 	public boolean enableUser(Long userId){
-		return userRepository.enableUser(userId);
+		userRepository.enableUser(userId);
+		return true;
 	}
 
 	public boolean login (String email, String password)
 	{
-		try{
-			User user = userRepository.getUserByEmail(email);
-			if(user ==null)
-			{				
-				throw new UsernameNotFoundException("Login Failed! Please try again.");
-			}
-			if(user.getPassword() != passwordEncoder.encode(password))
-			{
-				throw new UsernameNotFoundException("Login Failed! Please try again.");
-			}
-			if(!user.getIsEnable() || user.getIsLocked())
-			{
-				throw new UsernameNotFoundException("Login Failed! Please try again.");
-			}
+		try{			
+			
 			Authentication authentication =  authManager.authenticate(new UsernamePasswordAuthenticationToken(email,password));
+			User user = userRepository.getUserByEmail(email);
 			if(authentication.isAuthenticated())
 			{
 				generateUserEvent(user.getId(), EventEnum.LOGIN_ATTEMP_SUCCESS.getType());
-				log.info(jwtService.generateToken(email));
 				return true;
 			}
 			else
@@ -189,7 +178,7 @@ public class UserServiceImpl implements IUserService{
 		}
 		catch(Exception e)
 		{
-			throw new UsernameNotFoundException("Login Failed! Please try again.");
+			throw new UsernameNotFoundException("Operation Failed! Please try again.");
 		}
 	}
 
@@ -236,17 +225,16 @@ public class UserServiceImpl implements IUserService{
 		userEventServiceImpl.createUserEvent(userEvent);
 	}
 
-	public ChangePasswordResponse changeUserPassword(String email, String oldPassword, String newPassword){
+	public ChangePasswordResponse changeUserPassword(String email, String oldPwd, String newPwd){
 		try{
-			User user = userRepository.getUserByEmail(email);
-			if(user !=null && user.getPassword()==passwordEncoder.encode(oldPassword)){
-				if(userRepository.changeUserPassword(email, newPassword)){
-					return new ChangePasswordResponse(email, passwordEncoder.encode(newPassword));
-				}
-				else
-				{
-					return null;
-				}
+			boolean isLogin = login(email, oldPwd);
+			
+			String newPassword = passwordEncoder.encode(newPwd);
+			if(isLogin){
+				User user =  userRepository.getUserByEmail(email);
+				user.setPassword(newPassword);
+				update(user);
+				return new ChangePasswordResponse(email, newPassword);
 			}
 			else{
 				throw new UsernameNotFoundException("Change password failed! Please try again.");
@@ -258,9 +246,15 @@ public class UserServiceImpl implements IUserService{
 		}
 	}
 
-	@Override
+	/* @Override
 	public boolean changeUserPassword(String email, String newPassword) {
-		
-		return false;
-	}
+		try{
+			userRepository.changeUserPassword(email, newPassword);
+			return true;
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+	} */
 }

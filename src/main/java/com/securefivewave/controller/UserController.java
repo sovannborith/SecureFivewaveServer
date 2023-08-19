@@ -83,7 +83,5 @@ public class UserController {
 			return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.errorResponse(e.hashCode(),e.getMessage()));
 		}
 	}
-	/* private URI getUri() {
-		return URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/get/<userId>" ).toString());
-	} */
+	
 }

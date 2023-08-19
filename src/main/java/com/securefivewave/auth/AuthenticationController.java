@@ -61,7 +61,7 @@ public class AuthenticationController {
 		}
 	}
 
-	@PutMapping("/verify_otp")
+	@PutMapping("/verifyOtp")
 	public ResponseEntity<VerifyOtpResponse> verifyOtp (@RequestBody @Valid @RequestParam String email, @RequestParam String otp) {
 		try {	
 			VerifyOtpResponse verifyOtpResponse =authService.verifyOtp(email, otp);

@@ -15,5 +15,5 @@ public interface IUserService {
 	public List<UserDTO> getAllUsers();
 	public User update(User user);
 	public boolean enableUser(Long userId);
-	public boolean changeUserPassword(String email, String newPassword);
+	//public boolean changeUserPassword(String email, String newPassword);
 }
