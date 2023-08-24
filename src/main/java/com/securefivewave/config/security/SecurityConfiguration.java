@@ -11,8 +11,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.securefivewave.constaint.GlobalConstaint;
-import com.securefivewave.jwt.JwtAuthenticationFilter;
-
 
 import lombok.RequiredArgsConstructor;
 @Configuration

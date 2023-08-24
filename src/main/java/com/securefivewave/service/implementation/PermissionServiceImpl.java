@@ -4,10 +4,10 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
 import com.securefivewave.constaint.GlobalConstaint;
-import com.securefivewave.dto.UserDTO;
 import com.securefivewave.dto.permission.PermissionRequest;
 import com.securefivewave.dto.permission.PermissionResponse;
 import com.securefivewave.entity.Permission;
+import com.securefivewave.entity.User;
 import com.securefivewave.record.UserPermissionRecord;
 import com.securefivewave.repository.IPermissionRepository;
 import com.securefivewave.service.IPermissionService;
@@ -68,7 +68,7 @@ public class PermissionServiceImpl implements IPermissionService{
 
     public UserPermissionRecord getUserPermission(String email, Long objId)
     {
-        UserDTO user = userServiceImpl.getUserByEmail(email);
+        User user = userServiceImpl.getUserByEmail(email);
 
         if(user!=null){
             List<Permission> userPerm = getUserPermissionByUserIdObjectId(user.getId(),objId);

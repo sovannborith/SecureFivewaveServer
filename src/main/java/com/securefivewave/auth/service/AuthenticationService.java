@@ -10,7 +10,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.securefivewave.constaint.GlobalConstaint;
-import com.securefivewave.dto.UserDTO;
 import com.securefivewave.entity.User;
 import com.securefivewave.entity.UserEvent;
 import com.securefivewave.entity.UserToken;
@@ -20,7 +19,7 @@ import com.securefivewave.handler.request.RegisterRequest;
 import com.securefivewave.handler.response.AuthenticationResponse;
 import com.securefivewave.handler.response.RegisterResponse;
 import com.securefivewave.handler.response.VerifyOtpResponse;
-import com.securefivewave.jwt.JwtService;
+import com.securefivewave.service.implementation.JwtService;
 import com.securefivewave.service.implementation.UserEventServiceImpl;
 import com.securefivewave.service.implementation.UserOtpServiceImpl;
 import com.securefivewave.service.implementation.UserServiceImpl;
@@ -76,7 +75,7 @@ public class AuthenticationService {
 			boolean isLogin = this.getTokenForAuthenticatedUser(request.getEmail(),request.getPassword());
 			if(isLogin)
 			{
-				UserDTO user = userServiceImpl.getUserByEmail(request.getEmail());
+				User user = userServiceImpl.getUserByEmail(request.getEmail());
 				UserToken userToken = userTokenServiceImpl.getUserTokenByUserId(userServiceImpl.getUserByEmail(request.getEmail()).getId());
 				
 				String jwtToken = jwtService.generateToken(request.getEmail());
@@ -104,7 +103,7 @@ public class AuthenticationService {
 			
 			else
 			{
-				UserDTO user = userServiceImpl.getUserByEmail(request.getEmail());
+				User user = userServiceImpl.getUserByEmail(request.getEmail());
 				generateUserEvent(user.getId(),EventEnum.LOGIN_ATTEMP_FAILURE.getType());
 				throw new UsernameNotFoundException(GlobalConstaint.LOGIN_FAILED);
 			}
@@ -112,7 +111,7 @@ public class AuthenticationService {
 		}
 		catch(Exception e)
 		{
-			UserDTO user = userServiceImpl.getUserByEmail(request.getEmail());
+			User user = userServiceImpl.getUserByEmail(request.getEmail());
 			generateUserEvent(user.getId(),EventEnum.LOGIN_ATTEMP_FAILURE.getType());
 			throw new UsernameNotFoundException(GlobalConstaint.LOGIN_FAILED);
 		}

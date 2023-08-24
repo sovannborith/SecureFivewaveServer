@@ -1,4 +1,4 @@
-package com.securefivewave.jwt;
+package com.securefivewave.service.implementation;
 
 import java.security.Key;
 import java.util.Date;

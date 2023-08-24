@@ -17,7 +17,6 @@ import com.securefivewave.entity.UserToken;
 import com.securefivewave.enumeration.TokenTypeEnum;
 import com.securefivewave.handler.response.AuthenticationResponse;
 import com.securefivewave.handler.response.RefreshTokenResponse;
-import com.securefivewave.jwt.JwtService;
 import com.securefivewave.repository.IUserRepository;
 import com.securefivewave.repository.IUserTokenRepository;
 import com.securefivewave.service.IUserTokenService;

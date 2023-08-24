@@ -10,10 +10,9 @@ import com.securefivewave.dto.UserDTO;
 import com.securefivewave.entity.User;
 
 public interface IUserService {
-	public UserDTO createUser(User user) throws Exception;
-	public UserDTO getUserByEmail(String email);
+	public User createUser(User user) throws Exception;
+	public User getUserByEmail(String email);
 	public List<UserDTO> getAllUsers();
 	public User update(User user);
 	public boolean enableUser(Long userId);
-	//public boolean changeUserPassword(String email, String newPassword);
 }

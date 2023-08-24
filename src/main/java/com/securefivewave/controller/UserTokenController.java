@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.securefivewave.dto.usertoken.UserTokenRequest;
 import com.securefivewave.dto.usertoken.UserTokenResponse;
 import com.securefivewave.handler.response.CommonResponse;
-import com.securefivewave.jwt.JwtService;
+import com.securefivewave.service.implementation.JwtService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

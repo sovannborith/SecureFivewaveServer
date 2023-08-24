@@ -1,4 +1,4 @@
-package com.securefivewave.auth;
+package com.securefivewave.auth.controller;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

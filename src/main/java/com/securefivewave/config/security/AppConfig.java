@@ -1,4 +1,4 @@
-package com.securefivewave.config;
+package com.securefivewave.config.security;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

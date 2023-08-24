@@ -28,7 +28,6 @@ import com.securefivewave.entity.UserRole;
 import com.securefivewave.enumeration.EventEnum;
 import com.securefivewave.enumeration.RoleEnum;
 import com.securefivewave.exception.ApiException;
-import com.securefivewave.jwt.JwtService;
 import com.securefivewave.repository.IRoleRepository;
 import com.securefivewave.repository.IUserRepository;
 import com.securefivewave.service.IUserService;
@@ -56,7 +55,7 @@ public class UserServiceImpl implements IUserService{
 	private final UserEventServiceImpl userEventServiceImpl;
 
 	@Override
-	public UserDTO createUser(User user) throws Exception {
+	public User createUser(User user) throws Exception {
 		
 		if(getUserByEmail(user.getEmail().trim().toLowerCase())!=null) throw new ApiException("Email already in use. Please use a different email and try again.");
 		try
@@ -112,7 +111,7 @@ public class UserServiceImpl implements IUserService{
 			sendAccountVerificationEmail(user,url);
 			//String verificationUrl = getVerificationUrl(UUID.randomUUID().toString(),VerificationTypeEnum.ACCOUNT.getType());
 			
-			return UserDTOMapper.fromUser(user);
+			return user;
 		}
 		catch(EmptyResultDataAccessException exception) {
 			generateUserEvent(user.getId(), EventEnum.REGISTER_ATTEMP_FAILED.getType());
@@ -126,11 +125,11 @@ public class UserServiceImpl implements IUserService{
 	}
 
 	@Override
-	public UserDTO getUserByEmail(String email) {
+	public User getUserByEmail(String email) {
 		User user =userRepository.getUserByEmail(email);
 		if(user != null)
 		{
-			return UserDTOMapper.fromUser(user);
+			return user;
 		}
 		else{
 			return null;
@@ -246,15 +245,4 @@ public class UserServiceImpl implements IUserService{
 		}
 	}
 
-	/* @Override
-	public boolean changeUserPassword(String email, String newPassword) {
-		try{
-			userRepository.changeUserPassword(email, newPassword);
-			return true;
-		}
-		catch(Exception e)
-		{
-			throw e;
-		}
-	} */
 }

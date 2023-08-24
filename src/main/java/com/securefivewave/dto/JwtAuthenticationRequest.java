@@ -1,4 +1,4 @@
-package com.securefivewave.jwt;
+package com.securefivewave.dto;
 
 import lombok.Builder;
 import lombok.Data;
