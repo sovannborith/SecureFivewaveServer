@@ -11,4 +11,5 @@ public interface IUserTokenService {
     public UserToken update(UserToken userToken);
     public void deleteById(Long id);
     public List<UserToken> getAllValidUserTokenByUserId(Long userId);
+    public UserToken getUserTokenByRefreshToken(String refreshToken);
 }

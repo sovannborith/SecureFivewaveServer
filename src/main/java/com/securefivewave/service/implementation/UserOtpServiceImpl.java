@@ -102,6 +102,12 @@ public class UserOtpServiceImpl implements IUserOtpService{
 					//Update user to enabled
 					user.setIsEnable(true);
 					userRepository.save(user);
+
+					/* UserToken userToken = userTokenServiceImpl.getUserTokenByUserId(user.getId());
+					userToken.setRefreshTokenExpiryDate(new Date(System.currentTimeMillis()+ this.jwtService.getRefreshTokenExpiration()));
+					userToken.setAccessTokenExpiryDate(new Date(System.currentTimeMillis() + this.jwtService.getAccessTokenExpiration()));
+					userTokenServiceImpl.saveUserToken(userToken); */
+
 					generateUserEvent(user.getId(),EventEnum.OTP_VERIFY_SUCCESSED.getType());
 					return VerifyOtpResponse.builder()
 							.otpResponse(new OtpResponse(email, otp))

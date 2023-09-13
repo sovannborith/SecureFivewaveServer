@@ -1,7 +1,5 @@
 
 package com.securefivewave.service.implementation;
-
-
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.securefivewave.constaint.GlobalConstaint;
 import com.securefivewave.entity.User;
 import com.securefivewave.entity.UserToken;
-import com.securefivewave.enumeration.TokenTypeEnum;
 import com.securefivewave.handler.response.AuthenticationResponse;
 import com.securefivewave.handler.response.RefreshTokenResponse;
 import com.securefivewave.repository.IUserRepository;
@@ -28,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserTokenServiceImpl implements IUserTokenService{
+public class UserTokenServiceImpl implements IUserTokenService {
 	
 	private final IUserTokenRepository userTokenRepository;
 	private final JwtService jwtService;
@@ -73,13 +70,14 @@ public class UserTokenServiceImpl implements IUserTokenService{
 
 	public void revokedAllValidUserTokenByUserId(Long userId)
 	{
-		List<UserToken> validUserTokens = this.getAllValidUserTokenByUserId(userId);
+		/* List<UserToken> validUserTokens = this.getAllValidUserTokenByUserId(userId);
 		validUserTokens.forEach(token -> {
 			token.setExpired(true);
 			token.setRevoked(true);
     	});
-		userTokenRepository.saveAll(validUserTokens);
+		userTokenRepository.saveAll(validUserTokens); */
 	}
+	
 	public RefreshTokenResponse refreshToken(HttpServletRequest request, HttpServletResponse response)throws IOException, StreamWriteException, DatabindException, java.io.IOException {
 
         final String authHeader = request.getHeader(GlobalConstaint.AUTH_HEADER);
@@ -89,44 +87,56 @@ public class UserTokenServiceImpl implements IUserTokenService{
 			return null;
 		}
 		refreshToken = authHeader.substring(7);
-		userEmail = jwtService.extractUsername(refreshToken);
-		if(userEmail !=null) {
-            User user = userRepository.getUserByEmail(userEmail);
-            
-			if(jwtService.isTokenValid(refreshToken, user.getEmail())) {
-				String accessToken = jwtService.generateToken(user.getEmail());
+		try{
+			userEmail = jwtService.extractUsername(refreshToken);
+			if(userEmail !=null) {
+				User user = userRepository.getUserByEmail(userEmail);
 
-				Date jwtExpiryDate = jwtService.getJwtExpiryDate(accessToken);
-				revokedAllValidUserTokenByUserId(user.getId());
-				saveUserToken(user, accessToken, refreshToken);
-                var authResponse = AuthenticationResponse.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
-				return RefreshTokenResponse.builder()
-					.token(accessToken)
-					.jwtTokenExpiryDate(jwtExpiryDate)
-					.success(true)
-					.errorCode(null)
-					.message("Token refreshed")
-					.build();
+				String accessToken = jwtService.generateToken(user.getEmail());
+				Date accessTokenExpiryDate = new Date(System.currentTimeMillis()+ this.jwtService.getAccessTokenExpiration());
+				UserToken userToken = this.getUserTokenByRefreshToken(refreshToken);
+					
+				if(userToken !=null)
+				{
+					userToken.setAccessToken(accessToken);
+					userToken.setAccessTokenExpiryDate(accessTokenExpiryDate);
+					saveUserToken(userToken);
+
+					var authResponse = AuthenticationResponse.builder()
+						.accessToken(accessToken)
+						.refreshToken(refreshToken)
+						.build();
+					new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+					return RefreshTokenResponse.builder()
+						.accessToken(accessToken)
+						.accessTokenExpiryDate(accessTokenExpiryDate)
+						.refreshToken(userToken.getRefreshToken())
+						.refreshTokenExpiryDate(userToken.getRefreshTokenExpiryDate())
+						.success(true)
+						.errorCode(null)
+						.message("Token refreshed")
+						.build();
+				}
+				
+				if(jwtService.isTokenValid(refreshToken, user.getEmail())) {
+					
+				}
 			}
+			return null;
 		}
-		return null;
+		catch(Exception e){
+			throw e;
+		}
+		
     }
 
-	public void saveUserToken(User user, String accessToken, String refreshToken)
+	public void saveUserToken(UserToken userToken)
 	{
-		UserToken userToken = UserToken.builder()
-								.userId(user.getId())
-								.accessToken(accessToken)
-								.refreshToken(refreshToken)
-								.tokenType(TokenTypeEnum.BEARER.toString())
-								.isExpired(false)
-								.isRevoked(false)
-								.build();
-								
-		this.createUserToken(userToken);						
+		this.userTokenRepository.save(userToken);												
+	}
+
+	@Override
+	public UserToken getUserTokenByRefreshToken(String refreshToken) {
+		return userTokenRepository.getUserTokenByRefreshToken(refreshToken);
 	}
 }

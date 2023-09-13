@@ -81,18 +81,17 @@ public class AuthenticationService {
 				String jwtToken = jwtService.generateToken(request.getEmail());
 				String refreshToken = jwtService.generateRefreshToken(request.getEmail());
 				Date jwtExpiryDate = jwtService.getJwtExpiryDate(jwtToken);
+				
 
 				userToken.setAccessToken(jwtToken);
 				userToken.setRefreshToken(refreshToken);
-				userToken.setExpired(false);
-				userToken.setRevoked(false);
 				userTokenServiceImpl.update(userToken);
 				
 				return AuthenticationResponse.builder()
 					.id(user.getId())
 					.email(request.getEmail())
 					.accessToken(jwtToken)
-					.jwtTokenExpiryDate(jwtExpiryDate)
+					.accessTokenExpiryDate(jwtExpiryDate)
 					.refreshToken(refreshToken)
 					.success(true)
 					.message(GlobalConstaint.LOGIN_SUCCESS)

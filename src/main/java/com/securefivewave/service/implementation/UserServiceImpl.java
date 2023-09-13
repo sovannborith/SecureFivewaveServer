@@ -5,6 +5,7 @@ package com.securefivewave.service.implementation;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,8 +26,10 @@ import com.securefivewave.entity.User;
 import com.securefivewave.entity.UserEvent;
 import com.securefivewave.entity.UserOtp;
 import com.securefivewave.entity.UserRole;
+import com.securefivewave.entity.UserToken;
 import com.securefivewave.enumeration.EventEnum;
 import com.securefivewave.enumeration.RoleEnum;
+import com.securefivewave.enumeration.TokenTypeEnum;
 import com.securefivewave.exception.ApiException;
 import com.securefivewave.repository.IRoleRepository;
 import com.securefivewave.repository.IUserRepository;
@@ -90,10 +93,19 @@ public class UserServiceImpl implements IUserService{
 							.build();
 			// Save user token
 			//SecureFivewaveUserDetail userDetails = new SecureFivewaveUserDetail(user, userRoleServiceImpl, roleServiceImpl);
-			String jwtToken = jwtService.generateToken(user.getEmail());
+			String accessToken = jwtService.generateToken(user.getEmail());
 			revokedAllValidUserTokenByUserId(user.getId());// Revoked all valid tokens
-			saveUserToken(user, jwtToken,jwtToken); // Save user token
-			
+
+			UserToken userToken = UserToken.builder()
+						.userId(user.getId())
+						.accessToken(accessToken)
+						.refreshToken(accessToken)
+						.tokenType(TokenTypeEnum.BEARER.toString())
+						.accessTokenExpiryDate(new Date(System.currentTimeMillis() + this.jwtService.getAccessTokenExpiration()))
+						.refreshTokenExpiryDate(new Date(System.currentTimeMillis() + this.jwtService.getRefreshTokenExpiration()))
+						.build();
+
+			saveUserToken(userToken); // Save user token			
 
 
 			// Save user Otp
@@ -196,11 +208,11 @@ public class UserServiceImpl implements IUserService{
 		
 	}
 
-	private void saveUserToken(User user, String accessToken, String jwtToken)
+	private void saveUserToken(UserToken userToken)
 	{						
 		try
 		{			
-			userTokenServiceImpl.saveUserToken(user,jwtToken, jwtToken);
+			userTokenServiceImpl.saveUserToken(userToken);
 		}			
 		catch(Exception e)
 		{

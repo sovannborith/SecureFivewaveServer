@@ -1,6 +1,7 @@
 package com.securefivewave.config.security;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,11 +45,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				return;
 			}
 			jwt = authHeader.substring(7);
-			/* var isTokenExpired = jwtService.getJwtExpiryDate(jwt);
-			if(isTokenExpired < LocalDateTime.now())
+			var isTokenExpired = jwtService.getJwtExpiryDate(jwt);
+			Date date = new Date();
+			if(isTokenExpired.before(date))
 			{
-
-			} */
+				//Renew token
+			}
 			userEmail = jwtService.extractUsername(jwt);
 			if(userEmail !=null && SecurityContextHolder.getContext().getAuthentication()==null) {
 				UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);

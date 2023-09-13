@@ -1,4 +1,5 @@
 package com.securefivewave.entity;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -40,9 +41,11 @@ public class UserToken {
 	private String accessToken;
 	@Column(name = "refresh_token")
 	private String refreshToken;
-	@Column(name = "is_revoked")
-	private boolean isRevoked;
-	@Column(name = "is_expired")
-	private boolean isExpired;
+
+	@Column(name = "access_token_expiry_dt")
+	private Date accessTokenExpiryDate;
+
+	@Column(name = "refresh_token_expiry_dt")
+	private Date refreshTokenExpiryDate;
 	
 }

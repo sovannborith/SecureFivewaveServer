@@ -13,7 +13,8 @@ public class AuthenticationResponse {
 	private Long id;
 	private String email;
 	private String accessToken;
-	private Date jwtTokenExpiryDate;
+	private Date accessTokenExpiryDate;
+	private Date refreshTokenExpiryDate;
 	private String refreshToken;
 	private boolean success;
 	private String message;

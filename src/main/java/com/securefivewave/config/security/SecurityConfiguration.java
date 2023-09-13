@@ -7,8 +7,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import com.securefivewave.constaint.GlobalConstaint;
 
@@ -21,22 +23,26 @@ public class SecurityConfiguration {
 
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final AuthenticationProvider authenticationProvider ;
+    private final LogoutHandler logoutHandler;
 	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         
 		return http
-				
-                .csrf(csrf -> csrf.disable()) 
-                .authorizeHttpRequests( auth -> {
-                    auth.requestMatchers(GlobalConstaint.UN_SECURED_URLs).permitAll();          
-                })     
-                .authorizeHttpRequests( auth -> {                    
-                    auth.requestMatchers(GlobalConstaint.SECURED_URLs).authenticated();             
-                })                 
-                .sessionManagement(session -> session.sessionCreationPolicy( SessionCreationPolicy.STATELESS))                
+
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers(GlobalConstaint.UN_SECURED_URLs).permitAll();
+                })
+                .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers(GlobalConstaint.SECURED_URLs).authenticated();
+                })
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)                
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout((logout) -> logout.logoutUrl("/api/v1/auth/logout")
+                .addLogoutHandler(logoutHandler)
+                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
                 .build();
 		
 	}

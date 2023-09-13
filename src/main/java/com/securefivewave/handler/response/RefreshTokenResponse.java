@@ -9,8 +9,10 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class RefreshTokenResponse {
-	private String token;
-	private Date jwtTokenExpiryDate;
+	private String accessToken;
+	private String refreshToken;
+	private Date accessTokenExpiryDate;
+	private Date refreshTokenExpiryDate;
 	private boolean success;
 	private String message;
 	private Integer errorCode;
