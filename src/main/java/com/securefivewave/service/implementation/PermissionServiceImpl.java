@@ -4,11 +4,12 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
 import com.securefivewave.constaint.GlobalConstaint;
-import com.securefivewave.dto.permission.PermissionRequest;
-import com.securefivewave.dto.permission.PermissionResponse;
+import com.securefivewave.dto.permission.ICreatePermissionRequest;
+import com.securefivewave.dto.permission.ICreatePermissionResponse;
+import com.securefivewave.dto.permission.IGetPermissionResponse;
+import com.securefivewave.dto.permission.IPermission;
 import com.securefivewave.entity.Permission;
 import com.securefivewave.entity.User;
-import com.securefivewave.record.UserPermissionRecord;
 import com.securefivewave.repository.IPermissionRepository;
 import com.securefivewave.service.IPermissionService;
 
@@ -21,7 +22,7 @@ public class PermissionServiceImpl implements IPermissionService{
     private final IPermissionRepository permissionRepository;
     private final UserServiceImpl userServiceImpl;
 
-    public PermissionResponse createPermission(PermissionRequest request) {
+    public ICreatePermissionResponse createPermission(ICreatePermissionRequest request) {
         try{
             Permission p = getPermissionByRoleIdObjectId(request.getRoleId(), request.getObjId());
             if(p!=null) throw new InvalidDataAccessApiUsageException("Permission with this role and object already existed. Please use a different user or role and try again."); 
@@ -38,7 +39,7 @@ public class PermissionServiceImpl implements IPermissionService{
             
             createPermission(perm);
 
-            return PermissionResponse.builder()
+            return ICreatePermissionResponse.builder()
                     .permissionRequest(request)
                     .success(true)
                     .message(GlobalConstaint.PERMISSION_ADDED)
@@ -47,7 +48,7 @@ public class PermissionServiceImpl implements IPermissionService{
 
         }
         catch(Exception e){
-            return PermissionResponse.builder()
+            return ICreatePermissionResponse.builder()
                     .permissionRequest(request)
                     .success(false)
                     .message(GlobalConstaint.PERMISSION_ADD_FAILED)
@@ -66,7 +67,7 @@ public class PermissionServiceImpl implements IPermissionService{
         }
     }
 
-    public UserPermissionRecord getUserPermission(String email, Long objId)
+    public IGetPermissionResponse getUserPermission(String email, Long objId)
     {
         User user = userServiceImpl.getUserByEmail(email);
 
@@ -77,7 +78,6 @@ public class PermissionServiceImpl implements IPermissionService{
             boolean can_update =false;
             boolean can_delete =false;
             boolean can_all =false;
-            Long id =(long) 1;
 
             for(Permission p : userPerm){
                 if(p.getCanView()){
@@ -96,8 +96,22 @@ public class PermissionServiceImpl implements IPermissionService{
                     can_all =true;
                 }
             }
-            
-            return new UserPermissionRecord(id, user.getId(), objId,can_view,can_add,can_update,can_delete,can_all);
+
+            IPermission perm = IPermission.builder()
+                            .objId(objId)
+                            .userId(user.getId())
+                            .canAdd(can_add)
+                            .canView(can_view)
+                            .canUpdate(can_update)
+                            .canDelete(can_delete)
+                            .canAdd(can_all)
+                            .build();
+            return IGetPermissionResponse.builder()
+                    .permission(perm)
+                    .success(true)
+                    .errorCode(null)
+                    .message(null)
+                    .build();
         }
         else
         {

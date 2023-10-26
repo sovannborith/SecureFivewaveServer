@@ -4,9 +4,9 @@ import lombok.Builder;
 import lombok.Data;
 @Data
 @Builder
-public class PermissionResponse{
+public class IGetPermissionResponse{
 
-	private PermissionRequest permissionRequest;
+	private IPermission permission;
 	private boolean success;
 	private String message;
 	private Integer errorCode;

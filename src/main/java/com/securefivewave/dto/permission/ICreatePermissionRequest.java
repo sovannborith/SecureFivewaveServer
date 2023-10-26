@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PermissionRequest {
+public class ICreatePermissionRequest {
     private Long roleId;
     private Long objId;
     private boolean canView;

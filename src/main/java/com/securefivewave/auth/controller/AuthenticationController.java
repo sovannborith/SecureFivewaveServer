@@ -61,18 +61,6 @@ public class AuthenticationController {
 		}
 	}
 
-	/* @PostMapping("/logout")
-	public ResponseEntity<CommonResponse<AuthenticationResponse>> logout (){
-		try {
-			logoutService.logout()
-			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.successResponse(''));
-		}
-		catch(Exception e)
-		{
-			throw e;
-		}
-	} */
-
 	@PutMapping("/verifyOtp")
 	public ResponseEntity<VerifyOtpResponse> verifyOtp (@RequestBody @Valid @RequestParam String email, @RequestParam String otp) {
 		try {	
@@ -87,7 +75,7 @@ public class AuthenticationController {
 		}
 	}
 
-	@PutMapping("/resend_otp")
+	@PutMapping("/resendOtp")
 	public ResponseEntity<VerifyOtpResponse> resendOtp (@RequestBody @Valid @RequestParam String email) {
 		try {			
 			VerifyOtpResponse res =userOtpServiceImpl.regenerateOtp(email);

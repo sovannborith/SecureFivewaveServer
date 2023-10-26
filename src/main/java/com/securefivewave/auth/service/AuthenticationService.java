@@ -78,21 +78,27 @@ public class AuthenticationService {
 				User user = userServiceImpl.getUserByEmail(request.getEmail());
 				UserToken userToken = userTokenServiceImpl.getUserTokenByUserId(userServiceImpl.getUserByEmail(request.getEmail()).getId());
 				
-				String jwtToken = jwtService.generateToken(request.getEmail());
+				String accessToken = jwtService.generateToken(request.getEmail());
 				String refreshToken = jwtService.generateRefreshToken(request.getEmail());
-				Date jwtExpiryDate = jwtService.getJwtExpiryDate(jwtToken);
+				Date accessTokenExpiryDate = new Date(System.currentTimeMillis() + this.jwtService.getAccessTokenExpiration());
 				
 
-				userToken.setAccessToken(jwtToken);
+				userToken.setAccessToken(accessToken);
+				
+				userToken.setAccessTokenExpiryDate(accessTokenExpiryDate);
 				userToken.setRefreshToken(refreshToken);
+				//userToken.setRefreshTokenExpiryDate(new Date(System.currentTimeMillis() + this.jwtService.getAccessTokenExpiration()*2));
+				userToken.setRefreshTokenExpiryDate(new Date(System.currentTimeMillis() + this.jwtService.getRefreshTokenExpiration()));
+				
 				userTokenServiceImpl.update(userToken);
 				
 				return AuthenticationResponse.builder()
 					.id(user.getId())
 					.email(request.getEmail())
-					.accessToken(jwtToken)
-					.accessTokenExpiryDate(jwtExpiryDate)
-					.refreshToken(refreshToken)
+					.accessToken(accessToken)
+					.accessTokenExpiryDate(userToken.getAccessTokenExpiryDate())
+					.refreshToken(userToken.getRefreshToken())
+					.refreshTokenExpiryDate(userToken.getRefreshTokenExpiryDate())
 					.success(true)
 					.message(GlobalConstaint.LOGIN_SUCCESS)
 					.errorCode(null)

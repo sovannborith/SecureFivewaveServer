@@ -8,16 +8,15 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.securefivewave.constaint.GlobalConstaint;
 import com.securefivewave.entity.User;
 import com.securefivewave.entity.UserToken;
-import com.securefivewave.handler.response.AuthenticationResponse;
 import com.securefivewave.handler.response.RefreshTokenResponse;
 import com.securefivewave.repository.IUserRepository;
 import com.securefivewave.repository.IUserTokenRepository;
 import com.securefivewave.service.IUserTokenService;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -82,34 +81,39 @@ public class UserTokenServiceImpl implements IUserTokenService {
 
         final String authHeader = request.getHeader(GlobalConstaint.AUTH_HEADER);
 		final String refreshToken;
-		final String userEmail;
 		if(authHeader ==null || !authHeader.startsWith(GlobalConstaint.JWT_PREFIX)) {
 			return null;
 		}
 		refreshToken = authHeader.substring(7);
 		try{
-			userEmail = jwtService.extractUsername(refreshToken);
-			if(userEmail !=null) {
-				User user = userRepository.getUserByEmail(userEmail);
-
-				String accessToken = jwtService.generateToken(user.getEmail());
-				Date accessTokenExpiryDate = new Date(System.currentTimeMillis()+ this.jwtService.getAccessTokenExpiration());
-				UserToken userToken = this.getUserTokenByRefreshToken(refreshToken);
-					
-				if(userToken !=null)
-				{
-					userToken.setAccessToken(accessToken);
+			if(refreshToken !=null && refreshToken.length()>0)
+			{
+				String email = this.jwtService.extractUsername(refreshToken);
+				User user = this.userRepository.getUserByEmail(email);
+				if(user ==null)
+					{
+						throw new JwtException("Invalid refresh token");
+					}
+				UserToken userToken = this.userTokenRepository.getUserTokenByUserId(user.getId());
+				if(userToken !=null){
+					if(userToken.getRefreshTokenExpiryDate().before(new Date())){
+						// Refresh token is expired
+						throw new JwtException("Refresh token is expired");
+					}
+					String newAccessToken = jwtService.generateToken(user.getEmail());
+					Date accessTokenExpiryDate = new Date(System.currentTimeMillis()+ this.jwtService.getAccessTokenExpiration());
+					userToken.setAccessToken(newAccessToken);
 					userToken.setAccessTokenExpiryDate(accessTokenExpiryDate);
 					saveUserToken(userToken);
 
-					var authResponse = AuthenticationResponse.builder()
-						.accessToken(accessToken)
-						.refreshToken(refreshToken)
+					/* AuthenticationResponse authResponse = AuthenticationResponse.builder()
+						.accessToken(newAccessToken)
+						.refreshToken(userToken.getRefreshToken())
 						.build();
-					new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+					new ObjectMapper().writeValue(response.getOutputStream(), authResponse); */
 					return RefreshTokenResponse.builder()
-						.accessToken(accessToken)
-						.accessTokenExpiryDate(accessTokenExpiryDate)
+						.accessToken(newAccessToken)
+						.accessTokenExpiryDate(userToken.getAccessTokenExpiryDate())
 						.refreshToken(userToken.getRefreshToken())
 						.refreshTokenExpiryDate(userToken.getRefreshTokenExpiryDate())
 						.success(true)
@@ -117,12 +121,13 @@ public class UserTokenServiceImpl implements IUserTokenService {
 						.message("Token refreshed")
 						.build();
 				}
-				
-				if(jwtService.isTokenValid(refreshToken, user.getEmail())) {
-					
+				else{
+					throw new JwtException("Invalid refresh token");
 				}
 			}
-			return null;
+			else{
+				throw new JwtException("Invalid refresh token");
+			}
 		}
 		catch(Exception e){
 			throw e;

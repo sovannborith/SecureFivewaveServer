@@ -1,7 +1,6 @@
 package com.securefivewave.config.security;
 
 import java.io.IOException;
-import java.util.Date;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,20 +36,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 				
 		try{
-			final String authHeader = request.getHeader(GlobalConstaint.AUTH_HEADER);
-			final String jwt;
-			final String userEmail;
-			if(authHeader ==null || !authHeader.startsWith(GlobalConstaint.JWT_PREFIX)) {
+
+			if(request.getRequestURI().toLowerCase().contains("login") || request.getRequestURI().toLowerCase().contains("register") || request.getRequestURI().toLowerCase().contains("resendotp")  || request.getRequestURI().toLowerCase().contains("verifyotp"))
+			{
 				filterChain.doFilter(request, response);
 				return;
 			}
+
+			final String authHeader = request.getHeader(GlobalConstaint.AUTH_HEADER);
+			final String jwt;
+			final String userEmail;
+			if(authHeader ==null || authHeader =="" || !authHeader.startsWith(GlobalConstaint.JWT_PREFIX)) {
+				filterChain.doFilter(request, response);
+				return;
+			}
+			//request.getRequestURL().indexOf(userEmail, 0)
 			jwt = authHeader.substring(7);
+			/*
 			var isTokenExpired = jwtService.getJwtExpiryDate(jwt);
 			Date date = new Date();
-			if(isTokenExpired.before(date))
+			 if(isTokenExpired.before(date))
 			{
 				//Renew token
-			}
+				
+			} */
 			userEmail = jwtService.extractUsername(jwt);
 			if(userEmail !=null && SecurityContextHolder.getContext().getAuthentication()==null) {
 				UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
