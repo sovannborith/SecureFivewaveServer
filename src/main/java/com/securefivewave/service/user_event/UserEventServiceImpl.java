@@ -1,12 +1,11 @@
 
-package com.securefivewave.service.implementation;
+package com.securefivewave.service.user_event;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.securefivewave.entity.UserEvent;
 import com.securefivewave.repository.IUserEventRepository;
-import com.securefivewave.service.IUserEventService;
 import lombok.RequiredArgsConstructor;
 
 @Service

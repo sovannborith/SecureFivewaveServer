@@ -1,4 +1,4 @@
-package com.securefivewave.service.implementation;
+package com.securefivewave.service.permission;
 import java.util.List;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import com.securefivewave.dto.permission.IPermission;
 import com.securefivewave.entity.Permission;
 import com.securefivewave.entity.User;
 import com.securefivewave.repository.IPermissionRepository;
-import com.securefivewave.service.IPermissionService;
+import com.securefivewave.service.user.UserServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +24,7 @@ public class PermissionServiceImpl implements IPermissionService{
 
     public ICreatePermissionResponse createPermission(ICreatePermissionRequest request) {
         try{
-            Permission p = getPermissionByRoleIdObjectId(request.getRoleId(), request.getObjId());
+            Permission p = getUserPermissionByRoleIdObjectId(request.getRoleId(), request.getObjId());
             if(p!=null) throw new InvalidDataAccessApiUsageException("Permission with this role and object already existed. Please use a different user or role and try again."); 
             
             Permission perm = new Permission();
@@ -67,7 +67,7 @@ public class PermissionServiceImpl implements IPermissionService{
         }
     }
 
-    public IGetPermissionResponse getUserPermission(String email, Long objId)
+    public IGetPermissionResponse getUserPermissionByEmailObjectId(String email, Long objId)
     {
         User user = userServiceImpl.getUserByEmail(email);
 
@@ -104,7 +104,7 @@ public class PermissionServiceImpl implements IPermissionService{
                             .canView(can_view)
                             .canUpdate(can_update)
                             .canDelete(can_delete)
-                            .canAdd(can_all)
+                            .canAll(can_all)
                             .build();
             return IGetPermissionResponse.builder()
                     .permission(perm)
@@ -131,7 +131,7 @@ public class PermissionServiceImpl implements IPermissionService{
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteUserPermissionById(Long id) {
         try{
             permissionRepository.deleteById(id);
         }
@@ -142,7 +142,7 @@ public class PermissionServiceImpl implements IPermissionService{
     }
 
     @Override
-    public Permission getPermissionById(Long id) {
+    public Permission getUserPermissionById(Long id) {
         
         try{
             return permissionRepository.getPermissionById(id);
@@ -185,7 +185,7 @@ public class PermissionServiceImpl implements IPermissionService{
     }
 
     @Override
-    public Permission getPermissionByRoleIdObjectId(Long roleId, Long objId) {
+    public Permission getUserPermissionByRoleIdObjectId(Long roleId, Long objId) {
         try{
             return permissionRepository.getUserPermissionByRoleIdObjectId(roleId, objId);
         }

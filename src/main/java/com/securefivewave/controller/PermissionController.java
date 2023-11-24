@@ -13,7 +13,7 @@ import com.securefivewave.dto.permission.IGetPermissionRequest;
 import com.securefivewave.dto.permission.IGetPermissionResponse;
 import com.securefivewave.entity.Permission;
 import com.securefivewave.handler.response.CommonResponse;
-import com.securefivewave.service.implementation.PermissionServiceImpl;
+import com.securefivewave.service.permission.PermissionServiceImpl;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -53,9 +53,9 @@ public class PermissionController {
 	}
 
 	@PostMapping("/getUserPermissionByEmailObjectId")
-	public ResponseEntity<CommonResponse<IGetPermissionResponse>> getPermissionByEmailObjectId (@RequestBody @Valid IGetPermissionRequest request ) throws Exception{
+	public ResponseEntity<CommonResponse<IGetPermissionResponse>> getUserPermissionByEmailObjectId (@RequestBody @Valid IGetPermissionRequest request ) throws Exception{
 		try{
-			IGetPermissionResponse rec = permissionService.getUserPermission(request.getEmail(),request.getObjId());
+			IGetPermissionResponse rec = permissionService.getUserPermissionByEmailObjectId(request.getEmail(),request.getObjId());
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(CommonResponse.successResponse(rec));
 		}
 		catch(Exception e)

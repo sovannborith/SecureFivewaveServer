@@ -1,4 +1,4 @@
-package com.securefivewave.service.implementation;
+package com.securefivewave.service.user_role;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,6 @@ import com.securefivewave.entity.UserRole;
 import com.securefivewave.enumeration.RoleEnum;
 import com.securefivewave.exception.ApiException;
 import com.securefivewave.repository.IUserRoleRepository;
-import com.securefivewave.service.IUserRoleService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

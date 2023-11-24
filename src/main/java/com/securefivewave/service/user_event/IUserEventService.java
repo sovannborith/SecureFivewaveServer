@@ -1,4 +1,4 @@
-package com.securefivewave.service;
+package com.securefivewave.service.user_event;
 import java.util.List;
 
 import com.securefivewave.entity.UserEvent;

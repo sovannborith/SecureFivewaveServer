@@ -1,4 +1,4 @@
-package com.securefivewave.service;
+package com.securefivewave.service.user_token;
 
 import java.util.List;
 import com.securefivewave.entity.UserToken;

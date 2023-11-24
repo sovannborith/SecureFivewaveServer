@@ -20,7 +20,7 @@ import com.securefivewave.dto.user.ChangeProfileRequest;
 import com.securefivewave.entity.User;
 import com.securefivewave.handler.request.RegisterRequest;
 import com.securefivewave.handler.response.CommonResponse;
-import com.securefivewave.service.implementation.UserServiceImpl;
+import com.securefivewave.service.user.UserServiceImpl;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

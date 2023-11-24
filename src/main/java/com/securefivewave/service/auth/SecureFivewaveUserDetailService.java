@@ -1,13 +1,14 @@
-package com.securefivewave.auth.service;
+package com.securefivewave.service.auth;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+
 import com.securefivewave.entity.User;
 import com.securefivewave.repository.IUserRepository;
-import com.securefivewave.service.implementation.RoleServiceImpl;
-import com.securefivewave.service.implementation.UserRoleServiceImpl;
+import com.securefivewave.service.role.RoleServiceImpl;
+import com.securefivewave.service.user_role.UserRoleServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 

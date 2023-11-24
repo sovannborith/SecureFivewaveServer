@@ -1,4 +1,4 @@
-package com.securefivewave.auth.service;
+package com.securefivewave.service.auth;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -19,11 +19,11 @@ import com.securefivewave.handler.request.RegisterRequest;
 import com.securefivewave.handler.response.AuthenticationResponse;
 import com.securefivewave.handler.response.RegisterResponse;
 import com.securefivewave.handler.response.VerifyOtpResponse;
-import com.securefivewave.service.implementation.JwtService;
-import com.securefivewave.service.implementation.UserEventServiceImpl;
-import com.securefivewave.service.implementation.UserOtpServiceImpl;
-import com.securefivewave.service.implementation.UserServiceImpl;
-import com.securefivewave.service.implementation.UserTokenServiceImpl;
+import com.securefivewave.service.user_event.UserEventServiceImpl;
+import com.securefivewave.service.user_otp.UserOtpServiceImpl;
+import com.securefivewave.service.user_token.UserTokenServiceImpl;
+import com.securefivewave.service.jwt.JwtService;
+import com.securefivewave.service.user.UserServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 

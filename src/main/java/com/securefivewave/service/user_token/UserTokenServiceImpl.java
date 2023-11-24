@@ -1,5 +1,5 @@
 
-package com.securefivewave.service.implementation;
+package com.securefivewave.service.user_token;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +14,7 @@ import com.securefivewave.entity.UserToken;
 import com.securefivewave.handler.response.RefreshTokenResponse;
 import com.securefivewave.repository.IUserRepository;
 import com.securefivewave.repository.IUserTokenRepository;
-import com.securefivewave.service.IUserTokenService;
+import com.securefivewave.service.jwt.JwtService;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.io.IOException;

@@ -9,12 +9,11 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.securefivewave.auth.service.SecureFivewaveUserDetail;
 import com.securefivewave.constaint.GlobalConstaint;
 import com.securefivewave.repository.IUserRepository;
-import com.securefivewave.service.implementation.RoleServiceImpl;
-import com.securefivewave.service.implementation.UserRoleServiceImpl;
-
+import com.securefivewave.service.auth.SecureFivewaveUserDetail;
+import com.securefivewave.service.user_role.UserRoleServiceImpl;
+import com.securefivewave.service.role.RoleServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 

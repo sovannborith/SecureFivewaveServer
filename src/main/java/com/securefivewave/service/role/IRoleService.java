@@ -1,4 +1,4 @@
-package com.securefivewave.service;
+package com.securefivewave.service.role;
 
 
 import com.securefivewave.dto.RoleDTO;

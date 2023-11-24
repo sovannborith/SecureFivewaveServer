@@ -1,4 +1,4 @@
-package com.securefivewave.auth.service;
+package com.securefivewave.service.auth;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.securefivewave.dto.UserRoleDTO;
 import com.securefivewave.entity.User;
-import com.securefivewave.service.implementation.RoleServiceImpl;
-import com.securefivewave.service.implementation.UserRoleServiceImpl;
+import com.securefivewave.service.user_role.UserRoleServiceImpl;
+import com.securefivewave.service.role.RoleServiceImpl;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

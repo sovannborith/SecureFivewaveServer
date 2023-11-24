@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.securefivewave.service;
+package com.securefivewave.service.user;
 
 
 import java.util.List;

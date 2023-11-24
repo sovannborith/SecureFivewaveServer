@@ -1,5 +1,5 @@
 
-package com.securefivewave.service.implementation;
+package com.securefivewave.service.user;
 
 
 import java.io.UnsupportedEncodingException;
@@ -33,7 +33,12 @@ import com.securefivewave.enumeration.TokenTypeEnum;
 import com.securefivewave.exception.ApiException;
 import com.securefivewave.repository.IRoleRepository;
 import com.securefivewave.repository.IUserRepository;
-import com.securefivewave.service.IUserService;
+import com.securefivewave.service.account_verification.AccountVerificationServiceImpl;
+import com.securefivewave.service.user_event.UserEventServiceImpl;
+import com.securefivewave.service.jwt.JwtService;
+import com.securefivewave.service.user_otp.UserOtpServiceImpl;
+import com.securefivewave.service.user_role.UserRoleServiceImpl;
+import com.securefivewave.service.user_token.UserTokenServiceImpl;
 import com.securefivewave.util.otp.OtpUtil;
 
 import jakarta.mail.MessagingException;

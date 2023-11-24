@@ -1,4 +1,4 @@
-package com.securefivewave.service;
+package com.securefivewave.service.permission;
 
 import java.util.List;
 
@@ -10,8 +10,8 @@ public interface IPermissionService {
     public List<Permission> getUserPermissionByObjectId(Long objId);
     public List<Permission> getUserPermissionByUserIdObjectId(Long userId, Long objId);
     public List<Permission> getAllUserPermission();
-    public Permission getPermissionById(Long id);
-    public Permission getPermissionByRoleIdObjectId(Long roleId, Long objId);
+    public Permission getUserPermissionById(Long id);
+    public Permission getUserPermissionByRoleIdObjectId(Long roleId, Long objId);
     public Permission update(Permission permission);
-    public void deleteById(Long id);
+    public void deleteUserPermissionById(Long id);
 }

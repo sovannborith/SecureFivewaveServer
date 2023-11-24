@@ -1,5 +1,5 @@
 
-package com.securefivewave.service.implementation;
+package com.securefivewave.service.user_otp;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Duration;
@@ -18,7 +18,8 @@ import com.securefivewave.handler.response.OtpResponse;
 import com.securefivewave.handler.response.VerifyOtpResponse;
 import com.securefivewave.repository.IUserOtpRepository;
 import com.securefivewave.repository.IUserRepository;
-import com.securefivewave.service.IUserOtpService;
+import com.securefivewave.service.account_verification.AccountVerificationServiceImpl;
+import com.securefivewave.service.user_event.UserEventServiceImpl;
 import com.securefivewave.util.email.EmailUtil;
 import com.securefivewave.util.otp.OtpUtil;
 

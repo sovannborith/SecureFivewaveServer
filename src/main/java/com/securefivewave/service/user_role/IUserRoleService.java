@@ -1,4 +1,4 @@
-package com.securefivewave.service;
+package com.securefivewave.service.user_role;
 
 import java.util.List;
 

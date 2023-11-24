@@ -1,4 +1,4 @@
-package com.securefivewave.service;
+package com.securefivewave.service.account_verification;
 
 import java.util.List;
 

@@ -9,9 +9,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.securefivewave.auth.service.SecureFivewaveUserDetailService;
 import com.securefivewave.constaint.GlobalConstaint;
-import com.securefivewave.service.implementation.JwtService;
+import com.securefivewave.service.auth.SecureFivewaveUserDetailService;
+import com.securefivewave.service.jwt.JwtService;
 
 import io.micrometer.common.lang.NonNull;
 import jakarta.servlet.FilterChain;

@@ -6,7 +6,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
 
 import com.securefivewave.constaint.GlobalConstaint;
-import com.securefivewave.service.implementation.UserTokenServiceImpl;
+import com.securefivewave.service.user_token.UserTokenServiceImpl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

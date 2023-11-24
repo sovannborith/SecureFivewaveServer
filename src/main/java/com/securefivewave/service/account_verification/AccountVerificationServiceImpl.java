@@ -1,5 +1,5 @@
 
-package com.securefivewave.service.implementation;
+package com.securefivewave.service.account_verification;
 
 
 import java.util.List;
@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.securefivewave.entity.AccountVerification;
 import com.securefivewave.repository.IAccountVerficationRepository;
-import com.securefivewave.service.IAccountVerficationService;
 import lombok.RequiredArgsConstructor;
 
 @Service

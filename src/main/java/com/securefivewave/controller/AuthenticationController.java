@@ -1,4 +1,4 @@
-package com.securefivewave.auth.controller;
+package com.securefivewave.controller;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.securefivewave.auth.service.AuthenticationService;
 import com.securefivewave.handler.request.AuthenticationRequest;
 import com.securefivewave.handler.request.RegisterRequest;
 import com.securefivewave.handler.response.AuthenticationResponse;
@@ -16,8 +15,9 @@ import com.securefivewave.handler.response.CommonResponse;
 import com.securefivewave.handler.response.RefreshTokenResponse;
 import com.securefivewave.handler.response.RegisterResponse;
 import com.securefivewave.handler.response.VerifyOtpResponse;
-import com.securefivewave.service.implementation.UserOtpServiceImpl;
-import com.securefivewave.service.implementation.UserTokenServiceImpl;
+import com.securefivewave.service.auth.AuthenticationService;
+import com.securefivewave.service.user_otp.UserOtpServiceImpl;
+import com.securefivewave.service.user_token.UserTokenServiceImpl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
